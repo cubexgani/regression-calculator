@@ -7,14 +7,24 @@ import (
 )
 
 func main() {
-	co := [][]int{
-		{1, 2, 3},
-		{4, 5, 6},
-		{7, 8, 9},
+	co := [][]float32{
+		{1, 1, 1},
+		{2, -1, 1},
+		{1, 0, 1},
 	}
-	val := []int{10, 11, 12}
+	val := []float32{6, 3, 4}
 
-	noce := augmat.Make_aug_mat(co, val)
+	noce, err := augmat.MakeAugMat(co, val)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	fmt.Println(noce)
+	noce.Reduce()
+	fmt.Println("Reduced matrix")
+	fmt.Println(noce)
+	fmt.Println("Rank:", noce.Rank())
+	solns := noce.GetSolutions()
+	fmt.Println("Solution vector:", solns)
 	fmt.Println("Hello warudo")
 }
