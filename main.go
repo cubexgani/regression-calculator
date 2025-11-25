@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	augmat "github.com/cubexgani/quadratic-regression-calculator/utils"
+	augmat "github.com/cubexgani/regression-calculator/utils"
 )
 
 func main() {

@@ -1,5 +1,5 @@
-module github.com/cubexgani/quadratic-regression-calculator
+module github.com/cubexgani/regression-calculator
 
 go 1.25.4
 
-replace github.com/cubexgani/quadratic-regression-calculator/utils => ./utils
+replace github.com/cubexgani/regression-calculator/utils => ./utils
