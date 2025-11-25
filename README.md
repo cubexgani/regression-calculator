@@ -7,11 +7,9 @@ Hopefully this helps me pass my math exams.
 ## Getting started
 - Requires golang (obviously).
 - `git clone` this repository.
-- Go to the directory where the repository is cloned and `go run .`. Didn't try out `go build .` yet so just run the project like this.
+- Go to the directory where the repository is cloned and `go run .`. Didn't learn much about building stuff yet so just run the project like this.
 
 ## Goals
-- Get this augmented matrix thing working
-- Solve some system of equations
 - Go outside for a walk
 - Input x and y values
 - Get the curve equation

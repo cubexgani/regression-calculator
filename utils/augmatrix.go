@@ -7,17 +7,6 @@ type AugMatrix struct {
 	vals   []float32
 }
 
-type InitError struct {
-	coeffLen int
-	valsLen  int
-}
-
-func (i InitError) Error() string {
-	return fmt.Sprintf("Can't initialize augmented matrix as "+
-		"length of coefficient matrix %d does not equal the length of "+
-		"value vector %d", i.coeffLen, i.valsLen)
-}
-
 func (am AugMatrix) String() string {
 	s := ""
 	r := len(am.coeffs)
@@ -68,7 +57,7 @@ func (am *AugMatrix) GetSolutions() []float32 {
 	return solns
 }
 
-func (am *AugMatrix) Rank() int {
+func (am *AugMatrix) AugRank() int {
 	zerows := 0
 	for i := range len(am.coeffs) {
 		zeroCoeff := 1
@@ -82,6 +71,36 @@ func (am *AugMatrix) Rank() int {
 		}
 	}
 	return len(am.coeffs) - zerows
+}
+
+func (am *AugMatrix) CoeffRank() int {
+	zerows := 0
+	for i := range len(am.coeffs) {
+		zeroCoeff := true
+		for j := range len(am.coeffs[0]) {
+			if am.coeffs[i][j] != 0 {
+				zeroCoeff = false
+			}
+		}
+		if zeroCoeff {
+			zerows++
+		}
+	}
+	return len(am.coeffs) - zerows
+}
+
+func (am *AugMatrix) Solve() ([]float32, error) {
+	rows := len(am.coeffs)
+	am.Reduce()
+	ar, cr := am.AugRank(), am.CoeffRank()
+
+	if ar != cr {
+		return []float32{}, &RankMismatchError{ar, cr}
+	} else if ar != rows {
+		return []float32{}, &HomogenousError{ar, rows}
+	}
+
+	return am.GetSolutions(), nil
 }
 
 func MakeAugMat(coeff [][]float32, val []float32) (AugMatrix, error) {

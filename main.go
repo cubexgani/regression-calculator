@@ -20,11 +20,49 @@ func main() {
 		return
 	}
 	fmt.Println(noce)
-	noce.Reduce()
-	fmt.Println("Reduced matrix")
-	fmt.Println(noce)
-	fmt.Println("Rank:", noce.Rank())
-	solns := noce.GetSolutions()
-	fmt.Println("Solution vector:", solns)
+	solns, err := noce.Solve()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Solution vector:", solns)
+	}
+
+	hco := [][]float32{
+		{1, 3, -2},
+		{2, -1, 4},
+		{1, -11, 14},
+	}
+	hval := []float32{0, 0, 0}
+	homo, err := augmat.MakeAugMat(hco, hval)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(homo)
+	hsol, err := homo.Solve()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Solution vector:", hsol)
+	}
+
+	nco := [][]float32{
+		{1, 1, 1},
+		{1, 1, 1},
+		{2, -1, 1},
+	}
+	nval := []float32{3, 5, 1}
+	nsol, err := augmat.MakeAugMat(nco, nval)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	fmt.Println(nsol)
+	nslns, err := nsol.Solve()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println("Solution vector:", nslns)
+	}
 	fmt.Println("Hello warudo")
 }
