@@ -11,7 +11,6 @@ Hopefully this helps me pass my math exams.
 
 ## Goals
 - Go outside for a walk
-- Input x and y values
 - Get the curve equation
 - Bubbletea because I just want a cool looking TUI
 - Take up some non-cs hobbies

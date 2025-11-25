@@ -3,66 +3,62 @@ package main
 import (
 	"fmt"
 
-	augmat "github.com/cubexgani/regression-calculator/utils"
+	"github.com/cubexgani/regression-calculator/utils"
 )
 
 func main() {
-	co := [][]float32{
-		{1, 1, 1},
-		{2, -1, 1},
-		{1, 0, 1},
-	}
-	val := []float32{6, 3, 4}
+	n, x, y, err := scanXY()
 
-	noce, err := augmat.MakeAugMat(co, val)
+	if err != nil {
+		return
+	}
+
+	xv, yv := utils.GetTable(n, x, y)
+	// fmt.Println(xv)
+	// fmt.Println(yv)
+
+	co := [][]float32{
+		{float32(xv.Num), xv.Sums[0], xv.Sums[1]},
+		{xv.Sums[0], xv.Sums[1], xv.Sums[2]},
+		{xv.Sums[1], xv.Sums[2], xv.Sums[3]},
+	}
+	val := []float32{yv.Sums[0], yv.Sums[1], yv.Sums[2]}
+
+	noce, err := utils.MakeAugMat(co, val)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	fmt.Println(noce)
+	// fmt.Println(noce)
 	solns, err := noce.Solve()
 	if err != nil {
 		fmt.Println(err)
+		return
 	} else {
 		fmt.Println("Solution vector:", solns)
 	}
-
-	hco := [][]float32{
-		{1, 3, -2},
-		{2, -1, 4},
-		{1, -11, 14},
-	}
-	hval := []float32{0, 0, 0}
-	homo, err := augmat.MakeAugMat(hco, hval)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(homo)
-	hsol, err := homo.Solve()
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Solution vector:", hsol)
-	}
-
-	nco := [][]float32{
-		{1, 1, 1},
-		{1, 1, 1},
-		{2, -1, 1},
-	}
-	nval := []float32{3, 5, 1}
-	nsol, err := augmat.MakeAugMat(nco, nval)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(nsol)
-	nslns, err := nsol.Solve()
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("Solution vector:", nslns)
-	}
+	curve := utils.GetCurve(solns)
+	fmt.Println("Curve:", curve)
 	fmt.Println("Hello warudo")
+}
+
+func scanXY() (n int, x, y []float32, err error) {
+	fmt.Print("Enter number of points: ")
+	_, err = fmt.Scan(&n)
+	if err != nil {
+		fmt.Println("Error while scanning n:", err)
+		return
+	}
+	x = make([]float32, n)
+	y = make([]float32, n)
+	fmt.Println("Points:")
+	for i := range n {
+		_, err = fmt.Scan(&x[i], &y[i])
+		if err != nil {
+			fmt.Println("Error while scanning:", err)
+			return
+		}
+	}
+	// fmt.Printf("x: %v\ny:%v\n", x, y)
+	return
 }
