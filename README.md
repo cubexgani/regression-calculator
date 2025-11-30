@@ -1,6 +1,6 @@
 # Regression Calculator
 
-A cool calculator which takes x and y values as input and fits them in a curve. Currently supports only linear and quadratic regression as they are the only two I know.  
+A cool calculator which takes x and y values as input and fits them in a curve. It uses the method of least squares to find the curve equation. Currently supports only linear and quadratic regression as they are the only two I know.  
 Also this is my first project in golang. I still don't know why I picked up a language which is completely foreign to me for this project.  
 Hopefully this helps me pass my math exams.
 

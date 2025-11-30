@@ -7,7 +7,7 @@ import (
 )
 
 // The closest I can get to a constant array apparently
-var RegTypes = [2]string{"quadratic"}
+var RegTypes = [2]string{"quadratic", "linear"}
 
 func main() {
 	var regtype string

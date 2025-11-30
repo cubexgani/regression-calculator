@@ -28,6 +28,8 @@ func InitTable(n int, x, y []float32, regType string) (Regression, error) {
 	switch regType {
 	case "quadratic":
 		table = GetQuadTable(n, x, y)
+	case "linear":
+		table = GetLinTable(n, x, y)
 	default:
 		return nil, &InvalidRegTypeError{regType: regType}
 	}

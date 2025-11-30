@@ -17,10 +17,10 @@ func GetQuadTable(n int, x, y []float32) *QuadReg {
 	yp := make([][]float32, Powers_YXi)
 	ys := make([]float32, Powers_YXi)
 
-	for i := range 4 {
+	for i := range Powers_Xi {
 		xp[i] = make([]float32, n)
 	}
-	for i := range 3 {
+	for i := range Powers_YXi {
 		yp[i] = make([]float32, n)
 	}
 	for i := range n {
