@@ -63,10 +63,50 @@ func (qr *QuadReg) Solve() ([]string, error) {
 	} else {
 		fmt.Println("Solution vector:", solns)
 	}
-	return []string{qr.GetCurve(solns)}, nil
+
+	return []string{qr.GetCurve(solns, 'y')}, nil
 }
 
-//TODO: Eliminate cases like ... + -2x + -4.564x^2
-func (*QuadReg) GetCurve(solns []float32) string {
-	return fmt.Sprintf("y = %.3f + %.3fx + %.3fx^2", solns[0], solns[1], solns[2])
+func (*QuadReg) GetCurve(solns []float32, dependentVar rune) string {
+	termCount := 0
+
+	var independentVar rune
+	// This program specifically assumes that if dependent variable is y, independent variable is x and vice versa
+	if dependentVar == 'y' {
+		independentVar = 'x'
+	} else {
+		independentVar = 'y'
+	}
+
+	eqnStr := fmt.Sprintf("%c =", dependentVar)
+
+	if solns[0] != 0 {
+		eqnStr = fmt.Sprintf("%s %.3f", eqnStr, solns[0])
+		termCount++
+	}
+	for i := 1; i < len(solns); i++ {
+		if termCount == 0 {
+			if solns[i] != 0 {
+				eqnStr = fmt.Sprintf("%s %.3f%c", eqnStr, solns[i], independentVar)
+				termCount++
+			} else {
+				continue
+			}
+		} else if solns[i] < 0 {
+			eqnStr = fmt.Sprintf("%s - %.3f%c", eqnStr, solns[i], independentVar)
+			termCount++
+		} else if solns[i] > 0 {
+			eqnStr = fmt.Sprintf("%s + %.3f%c", eqnStr, solns[i], independentVar)
+			termCount++
+		} else {
+			continue
+		}
+		if i > 1 {
+			eqnStr = fmt.Sprintf("%s^%d", eqnStr, i)
+		}
+	}
+	if termCount == 0 {
+		eqnStr = fmt.Sprintf("%s %.3f", eqnStr, solns[0])
+	}
+	return eqnStr
 }
