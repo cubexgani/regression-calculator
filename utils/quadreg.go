@@ -2,25 +2,13 @@ package utils
 
 import "fmt"
 
-// Powers and sums indexed by power of x
-// Here powers will have 4 rows: x^1, x^2, x^3, x^4. x^0 = 1, which isn't required.
-// sums will contain their sums
-type XVals struct {
-	Num    int
-	Powers [][]float32
-	Sums   []float32
+type QuadReg struct {
+	Num int
+	xv  XVals
+	yv  YVals
 }
 
-// Powers indexed by power of y
-// Here powers will have 3 rows: y, xy, yx^2
-// sums will contain their sums
-type YVals struct {
-	Num    int
-	Powers [][]float32
-	Sums   []float32
-}
-
-func GetTable(n int, x, y []float32) (XVals, YVals) {
+func GetQuadTable(n int, x, y []float32) *QuadReg {
 	xp := make([][]float32, 4)
 	xs := make([]float32, 4)
 	yp := make([][]float32, 3)
@@ -51,12 +39,35 @@ func GetTable(n int, x, y []float32) (XVals, YVals) {
 		ys[2] += yp[2][i]
 
 	}
-	xv := XVals{n, xp, xs}
-	yv := YVals{n, yp, ys}
-	return xv, yv
+	xv := XVals{xp, xs}
+	yv := YVals{yp, ys}
+	return &QuadReg{n, xv, yv}
+}
+
+func (qr *QuadReg) Solve() ([]string, error) {
+
+	co := [][]float32{
+		{float32(qr.Num), qr.xv.Sums[0], qr.xv.Sums[1]},
+		{qr.xv.Sums[0], qr.xv.Sums[1], qr.xv.Sums[2]},
+		{qr.xv.Sums[1], qr.xv.Sums[2], qr.xv.Sums[3]},
+	}
+	val := []float32{qr.yv.Sums[0], qr.yv.Sums[1], qr.yv.Sums[2]}
+
+	noce, err := MakeAugMat(co, val)
+	if err != nil {
+		return []string{}, err
+	}
+	solns, err := noce.Solve()
+	if err != nil {
+		fmt.Println(err)
+		return []string{}, err
+	} else {
+		fmt.Println("Solution vector:", solns)
+	}
+	return qr.GetCurve(solns), nil
 }
 
 //TODO: Eliminate cases like ... + -2x + -4.564x^2
-func GetCurve(solns []float32) string {
-	return fmt.Sprintf("y = %.3f + %.3fx + %.3fx^2", solns[0], solns[1], solns[2])
+func (*QuadReg) GetCurve(solns []float32) []string {
+	return []string{fmt.Sprintf("y = %.3f + %.3fx + %.3fx^2", solns[0], solns[1], solns[2])}
 }

@@ -2,6 +2,12 @@ package utils
 
 import "fmt"
 
+// Error due to invalid regression type.
+// I'm actually keeping this one aside for later use, might not even need it, who knows.
+type InvalidRegTypeError struct {
+	regType string
+}
+
 type InitError struct {
 	coeffLen int
 	valsLen  int
@@ -15,6 +21,10 @@ type RankMismatchError struct {
 type HomogenousError struct {
 	rank   int
 	length int
+}
+
+func (irte InvalidRegTypeError) Error() string {
+	return fmt.Sprintf("Invalid regression type %s", irte.regType)
 }
 
 func (ie InitError) Error() string {

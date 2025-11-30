@@ -12,6 +12,7 @@ Hopefully this helps me pass my math exams.
 ## Goals
 - Go outside for a walk
 - Get the curve equation
+- learn about go testing
 - Bubbletea because I just want a cool looking TUI
 - Take up some non-cs hobbies
 - curve on display???

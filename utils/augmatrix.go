@@ -103,9 +103,9 @@ func (am *AugMatrix) Solve() ([]float32, error) {
 	return am.GetSolutions(), nil
 }
 
-func MakeAugMat(coeff [][]float32, val []float32) (AugMatrix, error) {
+func MakeAugMat(coeff [][]float32, val []float32) (*AugMatrix, error) {
 	if len(coeff) != len(val) {
-		return AugMatrix{}, &InitError{len(coeff), len(val)}
+		return &AugMatrix{}, &InitError{len(coeff), len(val)}
 	}
-	return AugMatrix{coeff, val}, nil
+	return &AugMatrix{coeff, val}, nil
 }

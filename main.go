@@ -6,40 +6,49 @@ import (
 	"github.com/cubexgani/regression-calculator/utils"
 )
 
+// The closest I can get to a constant array apparently
+var RegTypes = [2]string{"quadratic"}
+
 func main() {
+	var regtype string
+	fmt.Print("Regression type: ")
+	_, err := fmt.Scan(&regtype)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	exists := false
+	for i := range len(RegTypes) {
+		if regtype == RegTypes[i] {
+			exists = true
+		}
+	}
+	if !exists {
+		fmt.Printf("Invalid regression type %s gng\n", regtype)
+		return
+	}
+
 	n, x, y, err := scanXY()
 
 	if err != nil {
 		return
 	}
 
-	xv, yv := utils.GetTable(n, x, y)
+	table, err := utils.InitTable(n, x, y, regtype)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
 	// fmt.Println(xv)
 	// fmt.Println(yv)
 
-	co := [][]float32{
-		{float32(xv.Num), xv.Sums[0], xv.Sums[1]},
-		{xv.Sums[0], xv.Sums[1], xv.Sums[2]},
-		{xv.Sums[1], xv.Sums[2], xv.Sums[3]},
-	}
-	val := []float32{yv.Sums[0], yv.Sums[1], yv.Sums[2]}
-
-	noce, err := utils.MakeAugMat(co, val)
+	p, err := table.Solve()
 	if err != nil {
 		fmt.Println(err)
-		return
-	}
-	// fmt.Println(noce)
-	solns, err := noce.Solve()
-	if err != nil {
-		fmt.Println(err)
-		return
 	} else {
-		fmt.Println("Solution vector:", solns)
+		fmt.Println("Solution curve:", p)
 	}
-	curve := utils.GetCurve(solns)
-	fmt.Println("Curve:", curve)
-	fmt.Println("Hello warudo")
 }
 
 func scanXY() (n int, x, y []float32, err error) {
