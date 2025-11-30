@@ -9,10 +9,14 @@ type QuadReg struct {
 }
 
 func GetQuadTable(n int, x, y []float32) *QuadReg {
-	xp := make([][]float32, 4)
-	xs := make([]float32, 4)
-	yp := make([][]float32, 3)
-	ys := make([]float32, 3)
+	Powers_Xi = 4
+	Powers_YXi = 3
+
+	xp := make([][]float32, Powers_Xi)
+	xs := make([]float32, Powers_Xi)
+	yp := make([][]float32, Powers_YXi)
+	ys := make([]float32, Powers_YXi)
+
 	for i := range 4 {
 		xp[i] = make([]float32, n)
 	}
@@ -20,24 +24,19 @@ func GetQuadTable(n int, x, y []float32) *QuadReg {
 		yp[i] = make([]float32, n)
 	}
 	for i := range n {
-		xp[0][i] = x[i]
-		xp[1][i] = x[i] * x[i]
-		xp[2][i] = x[i] * x[i] * x[i]
-		xp[3][i] = x[i] * x[i] * x[i] * x[i]
+		var prodXi float32 = 1
+		for j := range Powers_Xi {
+			prodXi *= x[i]
+			xp[j][i] = prodXi
+			xs[j] += prodXi
+		}
 
-		xs[0] += xp[0][i]
-		xs[1] += xp[1][i]
-		xs[2] += xp[2][i]
-		xs[3] += xp[3][i]
-
-		yp[0][i] = y[i]
-		yp[1][i] = x[i] * y[i]
-		yp[2][i] = x[i] * x[i] * y[i]
-
-		ys[0] += yp[0][i]
-		ys[1] += yp[1][i]
-		ys[2] += yp[2][i]
-
+		var prodYXi float32 = y[i]
+		for j := range Powers_YXi {
+			yp[j][i] = prodYXi
+			ys[j] += prodYXi
+			prodYXi *= x[i]
+		}
 	}
 	xv := XVals{xp, xs}
 	yv := YVals{yp, ys}
@@ -64,10 +63,10 @@ func (qr *QuadReg) Solve() ([]string, error) {
 	} else {
 		fmt.Println("Solution vector:", solns)
 	}
-	return qr.GetCurve(solns), nil
+	return []string{qr.GetCurve(solns)}, nil
 }
 
 //TODO: Eliminate cases like ... + -2x + -4.564x^2
-func (*QuadReg) GetCurve(solns []float32) []string {
-	return []string{fmt.Sprintf("y = %.3f + %.3fx + %.3fx^2", solns[0], solns[1], solns[2])}
+func (*QuadReg) GetCurve(solns []float32) string {
+	return fmt.Sprintf("y = %.3f + %.3fx + %.3fx^2", solns[0], solns[1], solns[2])
 }

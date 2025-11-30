@@ -1,7 +1,9 @@
 package utils
 
+var Powers_Xi, Powers_YXi int
+
 // Powers and sums indexed by power of x
-// Here powers will have 4 rows: x^1, x^2, x^3, x^4. x^0 = 1, which isn't required.
+// Here powers will have rows like: x^1, x^2, x^3, x^4,... x^0 = 1, which isn't required.
 // sums will contain their sums
 type XVals struct {
 	Powers [][]float32
@@ -9,7 +11,7 @@ type XVals struct {
 }
 
 // Powers indexed by power of y
-// Here powers will have 3 rows: y, xy, yx^2
+// Here powers will have rows like: y, xy, yx^2, yx^3,...
 // sums will contain their sums
 type YVals struct {
 	Powers [][]float32
@@ -18,7 +20,7 @@ type YVals struct {
 
 type Regression interface {
 	Solve() ([]string, error)
-	GetCurve([]float32) []string
+	GetCurve([]float32) string
 }
 
 func InitTable(n int, x, y []float32, regType string) (Regression, error) {
