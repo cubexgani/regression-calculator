@@ -31,6 +31,9 @@ func (am *AugMatrix) Reduce() {
 		return
 	}
 	for i := range r - 1 {
+		if am.coeffs[i][i] == 0 {
+			continue
+		}
 		for j := i + 1; j < r; j++ {
 			mult := am.coeffs[j][i] / am.coeffs[i][i]
 			for k := range c {

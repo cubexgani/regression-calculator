@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/cubexgani/regression-calculator/utils"
 )
@@ -20,12 +21,12 @@ func main() {
 
 	exists := false
 	for i := range len(RegTypes) {
-		if regtype == RegTypes[i] {
+		if strings.ToLower(regtype) == RegTypes[i] {
 			exists = true
 		}
 	}
 	if !exists {
-		fmt.Printf("Invalid regression type %s gng\n", regtype)
+		fmt.Printf("Invalid regression type %s\n", regtype)
 		return
 	}
 
@@ -40,8 +41,6 @@ func main() {
 		fmt.Println(err)
 		return
 	}
-	// fmt.Println(xv)
-	// fmt.Println(yv)
 
 	p, err := table.Solve()
 	if err != nil {
@@ -68,6 +67,5 @@ func scanXY() (n int, x, y []float32, err error) {
 			return
 		}
 	}
-	// fmt.Printf("x: %v\ny:%v\n", x, y)
 	return
 }

@@ -93,7 +93,7 @@ func (*QuadReg) GetCurve(solns []float32, dependentVar rune) string {
 				continue
 			}
 		} else if solns[i] < 0 {
-			eqnStr = fmt.Sprintf("%s - %.3f%c", eqnStr, solns[i], independentVar)
+			eqnStr = fmt.Sprintf("%s - %.3f%c", eqnStr, -solns[i], independentVar)
 			termCount++
 		} else if solns[i] > 0 {
 			eqnStr = fmt.Sprintf("%s + %.3f%c", eqnStr, solns[i], independentVar)

@@ -1,5 +1,7 @@
 package utils
 
+import "strings"
+
 var Powers_Xi, Powers_YXi int
 
 // Powers and sums indexed by power of x
@@ -25,7 +27,8 @@ type Regression interface {
 
 func InitTable(n int, x, y []float32, regType string) (Regression, error) {
 	var table Regression
-	switch regType {
+
+	switch strings.ToLower(regType) {
 	case "quadratic":
 		table = GetQuadTable(n, x, y)
 	case "linear":
