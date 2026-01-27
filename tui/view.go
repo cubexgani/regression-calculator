@@ -2,25 +2,31 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/charmbracelet/lipgloss"
 )
 
 func (m ChoiceModel) View() string {
-	output := "Which regression is lwk hot?\n"
+	outputBuilder := strings.Builder{}
+	outputBuilder.WriteString("Which regression is lwk hot?\n")
 	if m.selected {
-		output = fmt.Sprintf("%sSelected: %s\n", output, m.opts[m.cursor])
+		fmt.Fprintf(&outputBuilder, "Selected: %s\n", m.opts[m.cursor])
 		if m.inswitch == 1 {
-			output = fmt.Sprintln(output, m.input.View())
+			fmt.Fprintln(&outputBuilder, m.input.View())
+			if m.errmsg != "" {
+				fmt.Fprintln(&outputBuilder, m.errmsg)
+			}
 		} else {
-			output = fmt.Sprintf("%sYou wrote: %s\n", output, m.input.Value())
+			fmt.Fprintf(&outputBuilder, "You wrote: %s\n", m.input.Value())
+			fmt.Fprintf(&outputBuilder, "Number of rows: %d\n", m.rownum)
 		}
 		return lipgloss.Place(
 			m.width,
 			m.height,
 			lipgloss.Center,
 			lipgloss.Center,
-			output,
+			outputBuilder.String(),
 		)
 	}
 	if m.isquit {
@@ -28,20 +34,20 @@ func (m ChoiceModel) View() string {
 	}
 	for i, opt := range m.opts {
 		if i == m.cursor {
-			output = fmt.Sprintf("%s > ", output)
+			outputBuilder.WriteString(" > ")
 		} else {
-			output = fmt.Sprintf("%s   ", output)
+			outputBuilder.WriteString("   ")
 		}
-		output = fmt.Sprintf("%s%s\n", output, opt)
+		fmt.Fprintf(&outputBuilder, "%s\n", opt)
 	}
-	output = fmt.Sprintln(output, "\nChoose or deth twn")
-	output = fmt.Sprintln(output, m.input.View())
+	outputBuilder.WriteString("\nChoose or deth twn\n")
+	fmt.Fprintln(&outputBuilder, m.input.View())
 	return lipgloss.Place(
 		m.width,
 		m.height,
 		lipgloss.Center,
 		lipgloss.Center,
-		output,
+		outputBuilder.String(),
 	)
 }
 

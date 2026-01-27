@@ -15,6 +15,8 @@ type ChoiceModel struct {
 	isquit   bool
 	input    textinput.Model
 	inswitch int
+	rownum   int
+	errmsg   string
 }
 
 type DadModel struct {

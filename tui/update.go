@@ -1,6 +1,10 @@
 package tui
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	"strconv"
+
+	tea "github.com/charmbracelet/bubbletea"
+)
 
 func (m ChoiceModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
@@ -33,6 +37,21 @@ func (m ChoiceModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.selected = true
 			m.inswitch++
 			if m.inswitch > 1 {
+				st := m.input.Value()
+				val, err := strconv.ParseInt(st, 10, 32)
+				if err != nil {
+					m.inswitch--
+					m.errmsg = err.Error()
+				} else {
+					m.rownum = int(val)
+					if m.rownum < 2 {
+						m.inswitch--
+						m.errmsg = "Please enter a number more than 1"
+					}
+				}
+				if m.inswitch > 1 {
+					m.errmsg = ""
+				}
 				return m, nil
 			}
 		}
