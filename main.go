@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
+	tea "github.com/charmbracelet/bubbletea"
+	"github.com/cubexgani/regression-calculator/tui"
 	"github.com/cubexgani/regression-calculator/utils"
 )
 
@@ -11,6 +14,15 @@ import (
 var RegTypes = [2]string{"quadratic", "linear"}
 
 func main() {
+	// doRegression()
+	p := tea.NewProgram(tui.NewModel(), tea.WithAltScreen())
+	if _, err := p.Run(); err != nil {
+		fmt.Printf("Alas, there's been an error: %v", err)
+		os.Exit(1)
+	}
+}
+
+func doRegression() {
 	var regtype string
 	fmt.Print("Regression type: ")
 	_, err := fmt.Scan(&regtype)
