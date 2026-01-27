@@ -5,6 +5,7 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+// The choice screen
 type ChoiceModel struct {
 	width    int
 	height   int
@@ -16,7 +17,11 @@ type ChoiceModel struct {
 	inswitch int
 }
 
-func NewModel() ChoiceModel {
+type DadModel struct {
+	Choice ChoiceModel
+}
+
+func NewChoiceModel() ChoiceModel {
 	ti := textinput.New()
 	ti.Prompt = "|* "
 	return ChoiceModel{
@@ -31,5 +36,9 @@ func NewModel() ChoiceModel {
 }
 
 func (m ChoiceModel) Init() tea.Cmd {
+	return nil
+}
+
+func (m DadModel) Init() tea.Cmd {
 	return nil
 }

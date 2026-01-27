@@ -44,3 +44,7 @@ func (m ChoiceModel) View() string {
 		output,
 	)
 }
+
+func (m DadModel) View() string {
+	return m.Choice.View()
+}

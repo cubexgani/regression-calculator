@@ -47,3 +47,7 @@ func (m ChoiceModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	}
 	return m, cmd
 }
+
+func (m DadModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m.Choice.Update(msg)
+}
