@@ -57,9 +57,10 @@ func (m XYInModel) View() string {
 	if m.done {
 		sb.WriteString("x, y\n")
 		for i := range m.n {
-			sb.WriteString(strconv.Itoa(m.x[i]))
+			sb.WriteString(strconv.FormatFloat(float64(m.x[i]), 'f', -1, 32))
 			sb.WriteString(", ")
-			sb.WriteString(strconv.Itoa(m.y[i]))
+			sb.WriteString(strconv.FormatFloat(float64(m.y[i]), 'f', -1, 32))
+
 			sb.WriteRune('\n')
 		}
 		return sb.String()

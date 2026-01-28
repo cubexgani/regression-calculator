@@ -16,12 +16,11 @@ var RegTypes = [2]string{"quadratic", "linear"}
 func main() {
 	// doRegression()
 	p := tea.NewProgram(tui.DadModel{
-		// Screen: 0,
 		Choice: tui.NewChoiceModel(),
 		XYIn:   tui.XYInModel{},
 		Result: tui.ResultModel{},
 	}, tea.WithAltScreen())
-	// p := tea.NewProgram(tui.NewXYModel(), tea.WithAltScreen())
+	// p := tea.NewProgram(tui.NewXYModel(10, 150, 50), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
@@ -36,6 +35,8 @@ func doRegression() {
 		fmt.Println(err)
 		return
 	}
+
+	// Ditch this part assuming that the selected regression type is valid
 
 	exists := false
 	for i := range len(RegTypes) {

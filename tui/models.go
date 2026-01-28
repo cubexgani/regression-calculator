@@ -22,8 +22,8 @@ type XYInModel struct {
 	winwdth int
 	winht   int
 	n       int
-	x       []int
-	y       []int
+	x       []float32
+	y       []float32
 	xytext  [][]textinput.Model
 	rowcurs int
 	colcurs int
@@ -35,8 +35,12 @@ type XYInModel struct {
 type ResultModel struct {
 	width  int
 	height int
-	errmsg string
-	arr    []int
+
+	n       int
+	regtype string
+	x       []float32
+	y       []float32
+	errmsg  string
 }
 
 var rowSize int

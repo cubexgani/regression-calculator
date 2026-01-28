@@ -29,7 +29,7 @@ func NewXYModel(rows int, width int, height int) XYInModel {
 		for j := range 2 {
 			xyt[i][j] = textinput.New()
 			xyt[i][j].Prompt = ""
-			xyt[i][j].Placeholder = "0"
+			xyt[i][j].Placeholder = "0.0"
 		}
 	}
 	xyt[0][0].Focus()
@@ -37,17 +37,20 @@ func NewXYModel(rows int, width int, height int) XYInModel {
 		winwdth: width,
 		winht:   height,
 		n:       num,
-		x:       make([]int, num),
-		y:       make([]int, num),
+		x:       make([]float32, num),
+		y:       make([]float32, num),
 		xytext:  xyt,
 	}
 }
 
-func NewResultModel(width int, height int) ResultModel {
+func NewResultModel(width int, height int, n int, x, y []float32, regtype string) ResultModel {
+
 	return ResultModel{
+		n:      n,
 		width:  width,
 		height: height,
-		arr:    make([]int, 3),
+		x:      x,
+		y:      y,
 	}
 }
 

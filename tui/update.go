@@ -144,7 +144,7 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			// value at current cursor is read
-			ival, err := strconv.Atoi(m.xytext[m.rowcurs][m.colcurs].Value())
+			ival, err := m.getVal()
 			if err != nil {
 				m.errmsg = fmt.Sprintf("%s at (%d, %d)", err, m.rowcurs, m.colcurs)
 				fcmds = append(fcmds, m.blurRest()...)
@@ -172,13 +172,14 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, focusCmd
 }
 
-func (m XYInModel) getVal() (int, error) {
+func (m XYInModel) getVal() (float32, error) {
 	content := m.xytext[m.rowcurs][m.colcurs].Value()
 	if content == "" {
 		return 0, nil
 	}
-	val, err := strconv.ParseInt(content, 10, 32)
-	return int(val), err
+	// val, err := strconv.ParseInt(content, 10, 32)
+	val, err := strconv.ParseFloat(content, 32)
+	return float32(val), err
 }
 
 func (m *XYInModel) updateInputs(msg tea.Msg) []tea.Cmd {
@@ -225,8 +226,8 @@ func (m DadModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	var changedModel tea.Model
 	if m.Choice.Inswitch > 1 && m.XYIn.done {
-		if m.Result.arr == nil {
-			m.Result = NewResultModel(m.XYIn.winwdth, m.XYIn.winht)
+		if m.Result.x == nil {
+			m.Result = NewResultModel(m.XYIn.winwdth, m.XYIn.winht, m.XYIn.n, m.XYIn.x, m.XYIn.y, m.Choice.opts[m.Choice.cursor])
 		}
 		changedModel, cmd = m.Result.Update(msg)
 		m.Result = changedModel.(ResultModel)
