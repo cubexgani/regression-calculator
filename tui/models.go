@@ -2,7 +2,6 @@ package tui
 
 import (
 	"github.com/charmbracelet/bubbles/textinput"
-	tea "github.com/charmbracelet/bubbletea"
 )
 
 // The choice screen
@@ -38,54 +37,4 @@ var rowSize int
 type DadModel struct {
 	Choice ChoiceModel
 	XYIn   XYInModel
-}
-
-func NewChoiceModel() ChoiceModel {
-	ti := textinput.New()
-	ti.Prompt = "|* "
-	return ChoiceModel{
-		opts: []string{
-			"Linear",
-			"Logarithmic",
-			"Power",
-			"Exponential",
-		},
-		input: ti,
-	}
-}
-
-func (m ChoiceModel) Init() tea.Cmd {
-	return nil
-}
-
-func (m DadModel) Init() tea.Cmd {
-	return nil
-}
-
-func NewXYModel(rows int, width int, height int) XYInModel {
-	rowSize = 60
-	num := rows
-
-	xyt := make([][]textinput.Model, num)
-	for i := range num {
-		xyt[i] = make([]textinput.Model, 2)
-		for j := range 2 {
-			xyt[i][j] = textinput.New()
-			xyt[i][j].Prompt = ""
-			xyt[i][j].Placeholder = "0"
-		}
-	}
-	xyt[0][0].Focus()
-	return XYInModel{
-		winwdth: width,
-		winht:   height,
-		n:       num,
-		x:       make([]int, num),
-		y:       make([]int, num),
-		xytext:  xyt,
-	}
-}
-
-func (m XYInModel) Init() tea.Cmd {
-	return nil
 }
