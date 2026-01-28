@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
@@ -12,7 +13,7 @@ func (m ChoiceModel) View() string {
 	outputBuilder.WriteString("Which regression is lwk hot?\n")
 	if m.selected {
 		fmt.Fprintf(&outputBuilder, "Selected: %s\n", m.opts[m.cursor])
-		if m.inswitch == 1 {
+		if m.Inswitch == 1 {
 			fmt.Fprintln(&outputBuilder, m.input.View())
 			if m.errmsg != "" {
 				fmt.Fprintln(&outputBuilder, m.errmsg)
@@ -51,6 +52,123 @@ func (m ChoiceModel) View() string {
 	)
 }
 
+func (m XYInModel) View() string {
+	sb := strings.Builder{}
+	if m.done {
+		sb.WriteString("x, y\n")
+		for i := range m.n {
+			sb.WriteString(strconv.Itoa(m.x[i]))
+			sb.WriteString(", ")
+			sb.WriteString(strconv.Itoa(m.y[i]))
+			sb.WriteRune('\n')
+		}
+		return sb.String()
+
+	} else {
+		if rowSize == 0 {
+			return lipgloss.Place(
+				m.winwdth,
+				m.winht,
+				lipgloss.Center,
+				lipgloss.Center,
+				"OH GOOD HEAVENS! WIDEN THY SCREEN!\n",
+			)
+
+		}
+		// styles: ls for alignment, bgc for bg color of text boxes, bdc for border colour
+		ls := lipgloss.NewStyle().
+			Width(rowSize).
+			Align(lipgloss.Center)
+
+		bgc := ls.
+			Background(lipgloss.Color("#21412d"))
+
+		bdc := lipgloss.NewStyle().
+			Foreground(lipgloss.Color("#05e66e"))
+
+		sb.WriteString("\n")
+		// top border
+		sb.WriteString(bdc.Render("┌"))
+		for range rowSize {
+			sb.WriteString(bdc.Render("─"))
+		}
+		sb.WriteString(bdc.Render("┬"))
+		for range rowSize {
+			sb.WriteString(bdc.Render("─"))
+		}
+
+		// I have to render the newlines separately otherwise a weird space gets prepended at the beginning
+		sb.WriteString(bdc.Render("┐"))
+		sb.WriteString("\n")
+
+		// heading
+		sb.WriteString(bdc.Render("│"))
+		sb.WriteString(ls.Render("x"))
+		sb.WriteString(bdc.Render("│"))
+		sb.WriteString(ls.Render("y"))
+		sb.WriteString(bdc.Render("│"))
+		sb.WriteString("\n")
+		sb.WriteString(bdc.Render("├"))
+		for range rowSize {
+			sb.WriteString(bdc.Render("─"))
+		}
+		sb.WriteString(bdc.Render("┼"))
+		for range rowSize {
+			sb.WriteString(bdc.Render("─"))
+		}
+		sb.WriteString(bdc.Render("┤"))
+
+		// textboxes
+		for i := range m.n {
+			var renderStyle lipgloss.Style
+			if m.xytext[i][0].Focused() {
+				renderStyle = bgc
+			} else {
+				renderStyle = ls
+			}
+			sb.WriteString("\n")
+			sb.WriteString(bdc.Render("│"))
+
+			sb.WriteString(renderStyle.Render(m.xytext[i][0].View()))
+			sb.WriteString(bdc.Render("│"))
+
+			if m.xytext[i][1].Focused() {
+				renderStyle = bgc
+			} else {
+				renderStyle = ls
+			}
+			sb.WriteString(renderStyle.Render(m.xytext[i][1].View()))
+			sb.WriteString(bdc.Render("│"))
+		}
+		sb.WriteString("\n")
+		sb.WriteString(bdc.Render("└"))
+		for range rowSize {
+			sb.WriteString(bdc.Render("─"))
+		}
+		sb.WriteString(bdc.Render("┴"))
+		for range rowSize {
+			sb.WriteString(bdc.Render("─"))
+		}
+		sb.WriteString(bdc.Render("┘\n"))
+	}
+	if m.errmsg != "" {
+		sb.WriteString(m.errmsg)
+		sb.WriteRune('\n')
+	}
+	return lipgloss.Place(
+		m.winwdth,
+		m.winht,
+		lipgloss.Center,
+		lipgloss.Center,
+		sb.String(),
+	)
+}
+
 func (m DadModel) View() string {
-	return m.Choice.View()
+	if m.Choice.Inswitch <= 1 {
+		return m.Choice.View()
+	} else {
+
+		return m.XYIn.View()
+	}
 }
