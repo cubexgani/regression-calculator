@@ -32,9 +32,17 @@ type XYInModel struct {
 	rowSize int
 }
 
+type ResultModel struct {
+	width  int
+	height int
+	errmsg string
+	arr    []int
+}
+
 var rowSize int
 
 type DadModel struct {
 	Choice ChoiceModel
 	XYIn   XYInModel
+	Result ResultModel
 }

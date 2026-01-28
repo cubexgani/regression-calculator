@@ -19,6 +19,7 @@ func main() {
 		// Screen: 0,
 		Choice: tui.NewChoiceModel(),
 		XYIn:   tui.XYInModel{},
+		Result: tui.ResultModel{},
 	}, tea.WithAltScreen())
 	// p := tea.NewProgram(tui.NewXYModel(), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {

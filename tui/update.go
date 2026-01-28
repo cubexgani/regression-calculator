@@ -207,34 +207,38 @@ func (m *XYInModel) blurRest() []tea.Cmd {
 		}
 	}
 	return fcmds
+}
 
+func (m ResultModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.String() {
+		case "ctrl+c":
+			return m, tea.Quit
+		}
+	}
+	return m, nil
 }
 
 func (m DadModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	var cmd tea.Cmd
 	var changedModel tea.Model
-	cmds := make([]tea.Cmd, 2)
-	cmdInd := 0
-	if m.Choice.Inswitch > 1 {
+	if m.Choice.Inswitch > 1 && m.XYIn.done {
+		if m.Result.arr == nil {
+			m.Result = NewResultModel(m.XYIn.winwdth, m.XYIn.winht)
+		}
+		changedModel, cmd = m.Result.Update(msg)
+		m.Result = changedModel.(ResultModel)
+	} else if m.Choice.Inswitch > 1 {
 		if m.XYIn.x == nil {
 			m.XYIn = NewXYModel(m.Choice.rownum, m.Choice.width, m.Choice.height)
-			cmds[cmdInd] = tea.ClearScreen
-			cmdInd++
 		}
 		changedModel, cmd = m.XYIn.Update(msg)
 		m.XYIn = changedModel.(XYInModel)
-		cmds[cmdInd] = cmd
-		cmdInd++
 	} else {
 		changedModel, cmd = m.Choice.Update(msg)
 		m.Choice = changedModel.(ChoiceModel)
-		cmds[cmdInd] = cmd
-		cmdInd++
 	}
-	if cmdInd > 1 {
-		return m, tea.Batch(cmds...)
-	} else {
-		return m, cmd
-	}
+	return m, cmd
 }

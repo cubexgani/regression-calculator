@@ -43,6 +43,14 @@ func NewXYModel(rows int, width int, height int) XYInModel {
 	}
 }
 
+func NewResultModel(width int, height int) ResultModel {
+	return ResultModel{
+		width:  width,
+		height: height,
+		arr:    make([]int, 3),
+	}
+}
+
 func (m ChoiceModel) Init() tea.Cmd {
 	return nil
 }
@@ -52,5 +60,8 @@ func (m DadModel) Init() tea.Cmd {
 }
 
 func (m XYInModel) Init() tea.Cmd {
+	return nil
+}
+func (m ResultModel) Init() tea.Cmd {
 	return nil
 }

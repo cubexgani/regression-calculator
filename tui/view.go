@@ -164,11 +164,22 @@ func (m XYInModel) View() string {
 	)
 }
 
-func (m DadModel) View() string {
-	if m.Choice.Inswitch <= 1 {
-		return m.Choice.View()
-	} else {
+func (m ResultModel) View() string {
+	return lipgloss.Place(
+		m.width,
+		m.height,
+		lipgloss.Center,
+		lipgloss.Center,
+		"WELCOME TO FRANCE",
+	)
+}
 
+func (m DadModel) View() string {
+	if m.Choice.Inswitch > 1 && m.XYIn.done {
+		return m.Result.View()
+	} else if m.Choice.Inswitch > 1 {
 		return m.XYIn.View()
+	} else {
+		return m.Choice.View()
 	}
 }
