@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/table"
 )
 
 func (m ChoiceModel) View() string {
@@ -81,7 +82,7 @@ func (m XYInModel) View() string {
 			Background(lipgloss.Color("#21412d"))
 
 		bdc := lipgloss.NewStyle().
-			Foreground(lipgloss.Color("#05e66e"))
+			Foreground(lipgloss.Color("84"))
 
 		sb.WriteString("\n")
 		// top border
@@ -160,18 +161,91 @@ func (m XYInModel) View() string {
 }
 
 func (m ResultModel) View() string {
-	outputBuilder := strings.Builder{}
+	var (
+		green = lipgloss.Color("84")
+		gray  = lipgloss.Color("245")
 
-	fmt.Fprintf(&outputBuilder, "%v %v %d\n%s\n", m.x, m.y, m.n, m.regtype)
-	fmt.Fprintf(&outputBuilder, "%v\n", m.table)
+		headerStyle = lipgloss.NewStyle().Foreground(green).Bold(true).Align(lipgloss.Center)
+		cellStyle   = lipgloss.NewStyle().Padding(0, 1).Width(14)
+		oddRowStyle = cellStyle.Foreground(gray)
+		// evenRowStyle = cellStyle.Foreground(lightGray)
+	)
+
+	t := table.New().
+		Border(lipgloss.NormalBorder()).
+		BorderStyle(lipgloss.NewStyle().Foreground(green)).
+		StyleFunc(func(row, col int) lipgloss.Style {
+			switch row {
+			case table.HeaderRow:
+				return headerStyle
+			default:
+				return oddRowStyle
+			}
+		})
+
+	// For printing data in a completely raw format, using tabs. Keeping it for debugging purposes
+	outputBuilder := strings.Builder{}
+	// For the beautiful lipgloss table
+	tableBuilder := strings.Builder{}
+
+	if m.table != nil {
+		xv, yv := m.table.GetData()
+		// still debating on whether I should use the len function or the exported variables
+		// Powers_Xi and Powers_Yi
+		xl, yl := len(xv.Powers), len(yv.Powers)
+		arx := make([]string, xl)
+		fmt.Fprint(&outputBuilder, "x")
+		arx[0] = "x"
+		for i := range xl - 1 {
+			fmt.Fprintf(&outputBuilder, "\tx^%d", i+2)
+			arx[i+1] = fmt.Sprintf("x^%d", i+2)
+		}
+		ary := make([]string, yl)
+		fmt.Fprint(&outputBuilder, "\t")
+		fmt.Fprint(&outputBuilder, "y")
+		ary[0] = "y"
+		for i := range yl - 1 {
+			if i == 0 {
+				fmt.Fprint(&outputBuilder, "\tyx")
+				ary[i+1] = "yx"
+				continue
+			}
+			fmt.Fprintf(&outputBuilder, "\txy^%d", i+1)
+			ary[i+1] = fmt.Sprintf("yx^%d", i+1)
+		}
+		t.Headers(append(arx, ary...)...)
+		fmt.Fprintln(&outputBuilder)
+		for i := range m.n {
+			for j := range xl {
+				ele := strconv.FormatFloat(float64(xv.Powers[j][i]), 'f', -1, 32)
+				outputBuilder.WriteString(ele)
+				outputBuilder.WriteString("\t")
+				arx[j] = ele
+			}
+			for j := range yl {
+				ele := strconv.FormatFloat(float64(yv.Powers[j][i]), 'f', -1, 32)
+				outputBuilder.WriteString(ele)
+				outputBuilder.WriteString("\t")
+				ary[j] = ele
+			}
+			t.Row(append(arx, ary...)...)
+			outputBuilder.WriteString("\n")
+		}
+		tableBuilder.WriteString(t.String())
+		fmt.Fprintln(&tableBuilder)
+		fmt.Fprintln(&tableBuilder, m.solns)
+	}
+
 	fmt.Fprintf(&outputBuilder, "%v\n", m.solns)
 	fmt.Fprintf(&outputBuilder, "%v\n", m.errmsg)
+	fmt.Fprintln(&tableBuilder, m.errmsg)
 	return lipgloss.Place(
 		m.width,
 		m.height,
 		lipgloss.Center,
 		lipgloss.Center,
-		outputBuilder.String(),
+		// outputBuilder.String(),
+		tableBuilder.String(),
 	)
 }
 

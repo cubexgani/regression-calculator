@@ -23,6 +23,7 @@ type YVals struct {
 type Regression interface {
 	Solve() ([]string, error)
 	GetCurve([]float32, rune) string
+	GetData() (XVals, YVals)
 }
 
 func InitTable(n int, x, y []float32, regType string) (Regression, error) {

@@ -4,8 +4,8 @@ import "fmt"
 
 type LinReg struct {
 	Num int
-	xv  XVals
-	yv  YVals
+	XV  XVals
+	YV  YVals
 }
 
 func GetLinTable(n int, x, y []float32) *LinReg {
@@ -46,10 +46,10 @@ func GetLinTable(n int, x, y []float32) *LinReg {
 func (lr *LinReg) Solve() ([]string, error) {
 
 	co := [][]float32{
-		{float32(lr.Num), lr.xv.Sums[0]},
-		{lr.xv.Sums[0], lr.xv.Sums[1]},
+		{float32(lr.Num), lr.XV.Sums[0]},
+		{lr.XV.Sums[0], lr.XV.Sums[1]},
 	}
-	val := []float32{lr.yv.Sums[0], lr.yv.Sums[1]}
+	val := []float32{lr.YV.Sums[0], lr.YV.Sums[1]}
 
 	noce, err := MakeAugMat(co, val)
 	if err != nil {
@@ -57,10 +57,7 @@ func (lr *LinReg) Solve() ([]string, error) {
 	}
 	solns, err := noce.Solve()
 	if err != nil {
-		fmt.Println(err)
 		return []string{}, err
-	} else {
-		fmt.Println("Solution vector:", solns)
 	}
 	return []string{lr.GetCurve(solns, 'y')}, nil
 }
@@ -95,4 +92,8 @@ func (*LinReg) GetCurve(solns []float32, dependentVar rune) string {
 		}
 	}
 	return eqnStr
+}
+
+func (lr *LinReg) GetData() (XVals, YVals) {
+	return lr.XV, lr.YV
 }

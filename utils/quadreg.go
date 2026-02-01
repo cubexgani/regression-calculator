@@ -4,8 +4,8 @@ import "fmt"
 
 type QuadReg struct {
 	Num int
-	xv  XVals
-	yv  YVals
+	XV  XVals
+	YV  YVals
 }
 
 func GetQuadTable(n int, x, y []float32) *QuadReg {
@@ -46,11 +46,11 @@ func GetQuadTable(n int, x, y []float32) *QuadReg {
 func (qr *QuadReg) Solve() ([]string, error) {
 
 	co := [][]float32{
-		{float32(qr.Num), qr.xv.Sums[0], qr.xv.Sums[1]},
-		{qr.xv.Sums[0], qr.xv.Sums[1], qr.xv.Sums[2]},
-		{qr.xv.Sums[1], qr.xv.Sums[2], qr.xv.Sums[3]},
+		{float32(qr.Num), qr.XV.Sums[0], qr.XV.Sums[1]},
+		{qr.XV.Sums[0], qr.XV.Sums[1], qr.XV.Sums[2]},
+		{qr.XV.Sums[1], qr.XV.Sums[2], qr.XV.Sums[3]},
 	}
-	val := []float32{qr.yv.Sums[0], qr.yv.Sums[1], qr.yv.Sums[2]}
+	val := []float32{qr.YV.Sums[0], qr.YV.Sums[1], qr.YV.Sums[2]}
 
 	noce, err := MakeAugMat(co, val)
 	if err != nil {
@@ -58,12 +58,8 @@ func (qr *QuadReg) Solve() ([]string, error) {
 	}
 	solns, err := noce.Solve()
 	if err != nil {
-		fmt.Println(err)
 		return []string{}, err
-	} else {
-		fmt.Println("Solution vector:", solns)
 	}
-
 	return []string{qr.GetCurve(solns, 'y')}, nil
 }
 
@@ -109,4 +105,8 @@ func (*QuadReg) GetCurve(solns []float32, dependentVar rune) string {
 		eqnStr = fmt.Sprintf("%s %.3f", eqnStr, solns[0])
 	}
 	return eqnStr
+}
+
+func (qr *QuadReg) GetData() (XVals, YVals) {
+	return qr.XV, qr.YV
 }
