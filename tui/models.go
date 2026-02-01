@@ -2,6 +2,7 @@ package tui
 
 import (
 	"github.com/charmbracelet/bubbles/textinput"
+	"github.com/cubexgani/regression-calculator/utils"
 )
 
 // The choice screen
@@ -21,10 +22,12 @@ type ChoiceModel struct {
 type XYInModel struct {
 	winwdth int
 	winht   int
+
+	regtype string
 	n       int
 	x       []float32
 	y       []float32
-	xytext  [][]textinput.Model
+	xytext  textinput.Model
 	rowcurs int
 	colcurs int
 	errmsg  string
@@ -40,6 +43,8 @@ type ResultModel struct {
 	regtype string
 	x       []float32
 	y       []float32
+	table   utils.Regression
+	solns   []string
 	errmsg  string
 }
 

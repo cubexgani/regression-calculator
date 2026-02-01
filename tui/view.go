@@ -18,9 +18,6 @@ func (m ChoiceModel) View() string {
 			if m.errmsg != "" {
 				fmt.Fprintln(&outputBuilder, m.errmsg)
 			}
-		} else {
-			fmt.Fprintf(&outputBuilder, "You wrote: %s\n", m.input.Value())
-			fmt.Fprintf(&outputBuilder, "Number of rows: %d\n", m.rownum)
 		}
 		return lipgloss.Place(
 			m.width,
@@ -60,7 +57,6 @@ func (m XYInModel) View() string {
 			sb.WriteString(strconv.FormatFloat(float64(m.x[i]), 'f', -1, 32))
 			sb.WriteString(", ")
 			sb.WriteString(strconv.FormatFloat(float64(m.y[i]), 'f', -1, 32))
-
 			sb.WriteRune('\n')
 		}
 		return sb.String()
@@ -98,11 +94,10 @@ func (m XYInModel) View() string {
 			sb.WriteString(bdc.Render("─"))
 		}
 
-		// I have to render the newlines separately otherwise a weird space gets prepended at the beginning
+		// heading
+		// i have to render the newlines separately otherwise a weird space gets prepended at the beginning
 		sb.WriteString(bdc.Render("┐"))
 		sb.WriteString("\n")
-
-		// heading
 		sb.WriteString(bdc.Render("│"))
 		sb.WriteString(ls.Render("x"))
 		sb.WriteString(bdc.Render("│"))
@@ -121,24 +116,23 @@ func (m XYInModel) View() string {
 
 		// textboxes
 		for i := range m.n {
-			var renderStyle lipgloss.Style
-			if m.xytext[i][0].Focused() {
-				renderStyle = bgc
-			} else {
-				renderStyle = ls
-			}
 			sb.WriteString("\n")
 			sb.WriteString(bdc.Render("│"))
 
-			sb.WriteString(renderStyle.Render(m.xytext[i][0].View()))
+			if m.rowcurs == i && m.colcurs == 0 {
+				sb.WriteString(bgc.Render(m.xytext.View()))
+			} else {
+				sb.WriteString(ls.Render(strconv.FormatFloat(float64(m.x[i]), 'f', -1, 32)))
+
+			}
+
 			sb.WriteString(bdc.Render("│"))
 
-			if m.xytext[i][1].Focused() {
-				renderStyle = bgc
+			if m.rowcurs == i && m.colcurs == 1 {
+				sb.WriteString(bgc.Render(m.xytext.View()))
 			} else {
-				renderStyle = ls
+				sb.WriteString(ls.Render(strconv.FormatFloat(float64(m.y[i]), 'f', -1, 32)))
 			}
-			sb.WriteString(renderStyle.Render(m.xytext[i][1].View()))
 			sb.WriteString(bdc.Render("│"))
 		}
 		sb.WriteString("\n")
@@ -166,12 +160,18 @@ func (m XYInModel) View() string {
 }
 
 func (m ResultModel) View() string {
+	outputBuilder := strings.Builder{}
+
+	fmt.Fprintf(&outputBuilder, "%v %v %d\n%s\n", m.x, m.y, m.n, m.regtype)
+	fmt.Fprintf(&outputBuilder, "%v\n", m.table)
+	fmt.Fprintf(&outputBuilder, "%v\n", m.solns)
+	fmt.Fprintf(&outputBuilder, "%v\n", m.errmsg)
 	return lipgloss.Place(
 		m.width,
 		m.height,
 		lipgloss.Center,
 		lipgloss.Center,
-		"WELCOME TO FRANCE",
+		outputBuilder.String(),
 	)
 }
 

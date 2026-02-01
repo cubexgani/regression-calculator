@@ -88,11 +88,7 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch mtype.String() {
 		case "ctrl+c":
-			for i := range m.n {
-				for j := range 2 {
-					m.xytext[i][j].Blur()
-				}
-			}
+			m.xytext.Blur()
 			return m, tea.Quit
 		case "tab":
 			val, err := m.getVal()
@@ -114,6 +110,20 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.rowcurs++
 				if m.rowcurs >= m.n {
 					m.rowcurs = 0
+				}
+			}
+			if m.colcurs == 0 {
+				if m.x[m.rowcurs] != 0 {
+					m.xytext.SetValue(strconv.FormatFloat(float64(m.x[m.rowcurs]), 'f', -1, 32))
+				} else {
+					m.xytext.SetValue("")
+				}
+			} else {
+				if m.y[m.rowcurs] != 0 {
+					m.xytext.SetValue(strconv.FormatFloat(float64(m.y[m.rowcurs]), 'f', -1, 32))
+
+				} else {
+					m.xytext.SetValue("")
 				}
 			}
 			fcmds = m.blurRest()
@@ -140,6 +150,20 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 					m.rowcurs = m.n - 1
 				}
 			}
+			if m.colcurs == 0 {
+				if m.x[m.rowcurs] != 0 {
+					m.xytext.SetValue(strconv.FormatFloat(float64(m.x[m.rowcurs]), 'f', -1, 32))
+				} else {
+					m.xytext.SetValue("")
+				}
+			} else {
+				if m.y[m.rowcurs] != 0 {
+					m.xytext.SetValue(strconv.FormatFloat(float64(m.y[m.rowcurs]), 'f', -1, 32))
+
+				} else {
+					m.xytext.SetValue("")
+				}
+			}
 			fcmds = m.blurRest()
 
 		case "enter":
@@ -156,11 +180,7 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.y[m.rowcurs] = ival
 			}
-			for i := range m.n {
-				for j := range 2 {
-					m.xytext[i][j].Blur()
-				}
-			}
+			m.xytext.Blur()
 			m.errmsg = ""
 			m.done = true
 			return m, nil
@@ -173,45 +193,30 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m XYInModel) getVal() (float32, error) {
-	content := m.xytext[m.rowcurs][m.colcurs].Value()
+	content := m.xytext.Value()
 	if content == "" {
 		return 0, nil
 	}
-	// val, err := strconv.ParseInt(content, 10, 32)
 	val, err := strconv.ParseFloat(content, 32)
 	return float32(val), err
 }
 
 func (m *XYInModel) updateInputs(msg tea.Msg) []tea.Cmd {
-	cmds := make([]tea.Cmd, m.n*2)
-
-	// Only text inputs with Focus() set will respond, so it's safe to simply
-	// update all of them here without any further logic.
-	for i := range m.n {
-		for j := range 2 {
-			m.xytext[i][j], cmds[2*i+j] = m.xytext[i][j].Update(msg)
-		}
-	}
-
-	return cmds
+	changedModel, cmd := m.xytext.Update(msg)
+	m.xytext = changedModel
+	return []tea.Cmd{cmd}
 }
 
 func (m *XYInModel) blurRest() []tea.Cmd {
-	fcmds := make([]tea.Cmd, m.n*2)
-	for i := range m.n {
-		for j := range 2 {
-			if i == m.rowcurs && j == m.colcurs {
-				fcmds[2*i+j] = m.xytext[i][j].Focus()
-				continue
-			}
-			m.xytext[i][j].Blur()
-		}
-	}
-	return fcmds
+	return nil
+
 }
 
 func (m ResultModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
+		m.height = msg.Height
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":
@@ -226,14 +231,14 @@ func (m DadModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 	var changedModel tea.Model
 	if m.Choice.Inswitch > 1 && m.XYIn.done {
-		if m.Result.x == nil {
-			m.Result = NewResultModel(m.XYIn.winwdth, m.XYIn.winht, m.XYIn.n, m.XYIn.x, m.XYIn.y, m.Choice.opts[m.Choice.cursor])
+		if m.Result.n == 0 {
+			m.Result = NewResultModel(m.XYIn.winwdth, m.XYIn.winht, m.XYIn.n, m.XYIn.x, m.XYIn.y, m.XYIn.regtype)
 		}
 		changedModel, cmd = m.Result.Update(msg)
 		m.Result = changedModel.(ResultModel)
 	} else if m.Choice.Inswitch > 1 {
 		if m.XYIn.x == nil {
-			m.XYIn = NewXYModel(m.Choice.rownum, m.Choice.width, m.Choice.height)
+			m.XYIn = NewXYModel(m.Choice.rownum, m.Choice.width, m.Choice.height, m.Choice.opts[m.Choice.cursor])
 		}
 		changedModel, cmd = m.XYIn.Update(msg)
 		m.XYIn = changedModel.(XYInModel)
