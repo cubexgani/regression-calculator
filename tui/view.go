@@ -160,15 +160,23 @@ func (m XYInModel) View() string {
 	)
 }
 
+// TODO: A couple of things to do here:
+// - Include tabs
+// - Show each step: getting the data table, the system of equations, and the curve equation
+// - Optionally show formulae for the system of equations
+// - Stop viewing for too small screen width
+// - Include viewport for vertical scrolling
 func (m ResultModel) View() string {
 	var (
 		green = lipgloss.Color("84")
 		gray  = lipgloss.Color("245")
 
 		headerStyle = lipgloss.NewStyle().Foreground(green).Bold(true).Align(lipgloss.Center)
+		// TODO: make cell width dependent on screen size and number of columns
 		cellStyle   = lipgloss.NewStyle().Padding(0, 1).Width(14)
-		oddRowStyle = cellStyle.Foreground(gray)
-		// evenRowStyle = cellStyle.Foreground(lightGray)
+		rowStyle    = cellStyle.Foreground(gray)
+		borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).
+				BorderForeground(green)
 	)
 
 	t := table.New().
@@ -179,7 +187,7 @@ func (m ResultModel) View() string {
 			case table.HeaderRow:
 				return headerStyle
 			default:
-				return oddRowStyle
+				return rowStyle
 			}
 		})
 
@@ -231,9 +239,33 @@ func (m ResultModel) View() string {
 			t.Row(append(arx, ary...)...)
 			outputBuilder.WriteString("\n")
 		}
-		tableBuilder.WriteString(t.String())
-		fmt.Fprintln(&tableBuilder)
-		fmt.Fprintln(&tableBuilder, m.solns)
+		for i := range xl {
+			ele := strconv.FormatFloat(float64(xv.Sums[i]), 'f', 2, 32)
+			if i == 0 {
+				arx[i] = fmt.Sprintf("Σx = %s", ele)
+			} else {
+				arx[i] = fmt.Sprintf("Σx^%d = %s", i+1, ele)
+			}
+		}
+		for i := range yl {
+			ele := strconv.FormatFloat(float64(yv.Sums[i]), 'f', 2, 32)
+			switch i {
+			case 0:
+				ary[i] = fmt.Sprintf("Σy = %s", ele)
+			case 1:
+				ary[i] = fmt.Sprintf("Σyx = %s", ele)
+
+			default:
+				ary[i] = fmt.Sprintf("Σyx^%d = %s", i, ele)
+			}
+		}
+		fmt.Fprintln(&outputBuilder, xv.Sums, yv.Sums)
+		t.Row(append(arx, ary...)...)
+		fmt.Fprintln(&tableBuilder, t.String())
+		fmt.Fprintln(&tableBuilder, "\nSystem of equations to solve:")
+		fmt.Fprintln(&tableBuilder, borderStyle.Render(getEqnSystem(m.regtype, xv.Sums, yv.Sums, m.n)))
+		fmt.Fprintln(&tableBuilder, "\nEquation of curve:")
+		fmt.Fprintln(&tableBuilder, borderStyle.Render(m.solns[0]))
 	}
 
 	fmt.Fprintf(&outputBuilder, "%v\n", m.solns)
@@ -247,6 +279,26 @@ func (m ResultModel) View() string {
 		// outputBuilder.String(),
 		tableBuilder.String(),
 	)
+}
+
+// TODO: Softcode this ig?
+func getEqnSystem(regtype string, xsums []float32, ysums []float32, n int) string {
+	eqnsBuilder := strings.Builder{}
+	switch strings.ToLower(regtype) {
+	case "linear":
+		fmt.Fprintf(&eqnsBuilder, "%.2f = %da + %.2fb\n"+
+			"%.2f = %.2fa + %.2fb", ysums[0],
+			n, xsums[0], ysums[1], xsums[0], xsums[1],
+		)
+	case "quadratic":
+		fmt.Fprintf(&eqnsBuilder, "%.2f = %da + %.2fb + %.2fc\n"+
+			"%.2f = %.2fa + %.2fb + %.2fc\n"+
+			"%.2f = %.2fa + %.2fb + %.2fc",
+			ysums[0], n, xsums[0], xsums[1], ysums[1], xsums[0], xsums[1], xsums[2],
+			ysums[2], xsums[1], xsums[2], xsums[3],
+		)
+	}
+	return eqnsBuilder.String()
 }
 
 func (m DadModel) View() string {
