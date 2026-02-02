@@ -7,7 +7,9 @@ Hopefully this helps me pass my math exams.
 ## Getting started
 - Requires golang (obviously).
 - `git clone` this repository.
-- Go to the directory where the repository is cloned and `go run .`. Didn't learn much about building stuff yet so just run the project like this.
+- Go to the directory where the repository is cloned.
+- Install the required dependencies using `go mod tidy`.
+- Run it with `go run .`. Didn't learn much about building stuff yet so just run the project like this.
 
 ## Goals
 - Go outside for a walk
@@ -15,4 +17,7 @@ Hopefully this helps me pass my math exams.
 - learn about go testing
 - Bubbletea because I just want a cool looking TUI
 - Take up some non-cs hobbies
+- Finish linear and quadratic regression before math exam
+- Add more regressions later on
+- Finally start studying for the upcoming exams
 - curve on display???
