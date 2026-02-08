@@ -43,7 +43,7 @@ func GetLinTable(n int, x, y []float32) *LinReg {
 	return &LinReg{n, xv, yv}
 }
 
-func (lr *LinReg) Solve() ([]string, error) {
+func (lr *LinReg) Solve() ([]float32, []string, error) {
 
 	co := [][]float32{
 		{float32(lr.Num), lr.XV.Sums[0]},
@@ -53,13 +53,13 @@ func (lr *LinReg) Solve() ([]string, error) {
 
 	noce, err := MakeAugMat(co, val)
 	if err != nil {
-		return []string{}, err
+		return nil, []string{}, err
 	}
 	solns, err := noce.Solve()
 	if err != nil {
-		return []string{}, err
+		return nil, []string{}, err
 	}
-	return []string{lr.GetCurve(solns, 'y')}, nil
+	return solns, []string{lr.GetCurve(solns, 'y')}, nil
 }
 
 func (*LinReg) GetCurve(solns []float32, dependentVar rune) string {

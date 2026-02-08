@@ -9,6 +9,7 @@ import (
 func NewChoiceModel() ChoiceModel {
 	ti := textinput.New()
 	ti.Prompt = "|* "
+	ti.Width = 30
 	return ChoiceModel{
 		opts: []string{
 			"Linear",
@@ -22,7 +23,6 @@ func NewChoiceModel() ChoiceModel {
 }
 
 func NewXYModel(rows int, width int, height int, regtype string) XYInModel {
-	rowSize = 60
 	num := rows
 
 	xyt := textinput.New()
@@ -37,6 +37,7 @@ func NewXYModel(rows int, width int, height int, regtype string) XYInModel {
 		x:       make([]float32, num),
 		y:       make([]float32, num),
 		xytext:  xyt,
+		rowSize: 60,
 	}
 }
 
@@ -44,28 +45,31 @@ func NewResultModel(width int, height int, n int, x, y []float32, regtype string
 	var sln []string
 	var err error
 	var tb utils.Regression
+	var vec []float32
 
 	tb, err = utils.InitTable(n, x, y, regtype)
 	em := ""
 	if err != nil {
 		em = err.Error()
 	} else {
-		sln, err = tb.Solve()
+		vec, sln, err = tb.Solve()
 		if err != nil {
 			em = err.Error()
 		}
 	}
 
 	return ResultModel{
-		n:       n,
-		regtype: regtype,
-		width:   width,
-		height:  height,
-		x:       x,
-		y:       y,
-		table:   tb,
-		solns:   sln,
-		errmsg:  em,
+		n:        n,
+		cellSize: 14,
+		regtype:  regtype,
+		width:    width,
+		height:   height,
+		x:        x,
+		y:        y,
+		table:    tb,
+		solns:    sln,
+		solnvec:  vec,
+		errmsg:   em,
 	}
 }
 

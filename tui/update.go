@@ -77,13 +77,13 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.winht = mtype.Height
 
 		if m.winwdth < 70 {
-			rowSize = 0
+			m.rowSize = 0
 		} else if m.winwdth < 90 {
-			rowSize = 25
+			m.rowSize = 25
 		} else if m.winwdth < 140 {
-			rowSize = 40
+			m.rowSize = 40
 		} else {
-			rowSize = 60
+			m.rowSize = 60
 		}
 	case tea.KeyMsg:
 		switch mtype.String() {
@@ -217,6 +217,13 @@ func (m ResultModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
+
+		// Well for now, I'm hardcoding the window width
+		if m.width < 115 {
+			m.cellSize = 0
+		} else {
+			m.cellSize = 14
+		}
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "ctrl+c":

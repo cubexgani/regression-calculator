@@ -10,16 +10,31 @@ import (
 )
 
 func (m ChoiceModel) View() string {
+	var (
+		green       = lipgloss.Color("84")
+		borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).
+				Padding(0, 2).
+				BorderForeground(green)
+		bgc = lipgloss.NewStyle().
+			Width(20).
+			Background(lipgloss.Color("#21412d"))
+	)
 	outputBuilder := strings.Builder{}
-	outputBuilder.WriteString("Which regression is lwk hot?\n")
+	optBuilder := strings.Builder{}
+	help := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("241"))
+	optBuilder.WriteString("Choose the type of regression\n")
 	if m.selected {
+		fmt.Fprint(&outputBuilder, optBuilder.String())
 		fmt.Fprintf(&outputBuilder, "Selected: %s\n", m.opts[m.cursor])
 		if m.Inswitch == 1 {
-			fmt.Fprintln(&outputBuilder, m.input.View())
+			fmt.Fprintln(&outputBuilder, "\nEnter number of coordinates")
+			fmt.Fprintln(&outputBuilder, borderStyle.Render(m.input.View()))
 			if m.errmsg != "" {
 				fmt.Fprintln(&outputBuilder, m.errmsg)
 			}
 		}
+		outputBuilder.WriteString("\n\n\n" + help.Render("[enter] Go to next screen   [ctrl+c] Exit"))
 		return lipgloss.Place(
 			m.width,
 			m.height,
@@ -29,18 +44,20 @@ func (m ChoiceModel) View() string {
 		)
 	}
 	if m.isquit {
-		return fmt.Sprintln("You stupid nig")
+		return fmt.Sprintln("GET OUT")
 	}
 	for i, opt := range m.opts {
 		if i == m.cursor {
-			outputBuilder.WriteString(" > ")
+			fmt.Fprintln(&optBuilder, bgc.Render("   ", opt))
 		} else {
-			outputBuilder.WriteString("   ")
+			fmt.Fprintln(&optBuilder, "   ", opt)
 		}
-		fmt.Fprintf(&outputBuilder, "%s\n", opt)
 	}
-	outputBuilder.WriteString("\nChoose or deth twn\n")
+	fmt.Fprintln(&outputBuilder, borderStyle.Render(optBuilder.String()))
+	outputBuilder.WriteString("\n\nEnter number of coordinates\n")
 	fmt.Fprintln(&outputBuilder, m.input.View())
+	outputBuilder.WriteString("\n\n\n" + help.Render("[↑/↓] Navigate    [enter] Go to number input   [ctrl+c] Exit"))
+
 	return lipgloss.Place(
 		m.width,
 		m.height,
@@ -50,8 +67,14 @@ func (m ChoiceModel) View() string {
 	)
 }
 
+// My dumbass drew all of this by hand. Might consider using more lipgloss borders later on.
+
 func (m XYInModel) View() string {
 	sb := strings.Builder{}
+	fmt.Fprintln(&sb, "Enter the coordinates")
+	fmt.Fprintln(&sb)
+	help := lipgloss.NewStyle().
+		Foreground(lipgloss.Color("241"))
 	if m.done {
 		sb.WriteString("x, y\n")
 		for i := range m.n {
@@ -63,7 +86,7 @@ func (m XYInModel) View() string {
 		return sb.String()
 
 	} else {
-		if rowSize == 0 {
+		if m.rowSize == 0 {
 			return lipgloss.Place(
 				m.winwdth,
 				m.winht,
@@ -75,7 +98,7 @@ func (m XYInModel) View() string {
 		}
 		// styles: ls for alignment, bgc for bg color of text boxes, bdc for border colour
 		ls := lipgloss.NewStyle().
-			Width(rowSize).
+			Width(m.rowSize).
 			Align(lipgloss.Center)
 
 		bgc := ls.
@@ -87,11 +110,11 @@ func (m XYInModel) View() string {
 		sb.WriteString("\n")
 		// top border
 		sb.WriteString(bdc.Render("┌"))
-		for range rowSize {
+		for range m.rowSize {
 			sb.WriteString(bdc.Render("─"))
 		}
 		sb.WriteString(bdc.Render("┬"))
-		for range rowSize {
+		for range m.rowSize {
 			sb.WriteString(bdc.Render("─"))
 		}
 
@@ -106,11 +129,11 @@ func (m XYInModel) View() string {
 		sb.WriteString(bdc.Render("│"))
 		sb.WriteString("\n")
 		sb.WriteString(bdc.Render("├"))
-		for range rowSize {
+		for range m.rowSize {
 			sb.WriteString(bdc.Render("─"))
 		}
 		sb.WriteString(bdc.Render("┼"))
-		for range rowSize {
+		for range m.rowSize {
 			sb.WriteString(bdc.Render("─"))
 		}
 		sb.WriteString(bdc.Render("┤"))
@@ -138,11 +161,11 @@ func (m XYInModel) View() string {
 		}
 		sb.WriteString("\n")
 		sb.WriteString(bdc.Render("└"))
-		for range rowSize {
+		for range m.rowSize {
 			sb.WriteString(bdc.Render("─"))
 		}
 		sb.WriteString(bdc.Render("┴"))
-		for range rowSize {
+		for range m.rowSize {
 			sb.WriteString(bdc.Render("─"))
 		}
 		sb.WriteString(bdc.Render("┘\n"))
@@ -151,6 +174,9 @@ func (m XYInModel) View() string {
 		sb.WriteString(m.errmsg)
 		sb.WriteRune('\n')
 	}
+	sb.WriteString("\n\n\n")
+	fmt.Fprintln(&sb, help.Render("[tab] Go to next cell     [shift+tab] Go to previous cell"))
+	fmt.Fprintln(&sb, help.Render("[enter] Confirm inputs    [ctrl + c] Exit"))
 	return lipgloss.Place(
 		m.winwdth,
 		m.winht,
@@ -162,10 +188,11 @@ func (m XYInModel) View() string {
 
 // TODO: A couple of things to do here:
 // - Include tabs
-// - Show each step: getting the data table, the system of equations, and the curve equation
 // - Optionally show formulae for the system of equations
-// - Stop viewing for too small screen width
 // - Include viewport for vertical scrolling
+// On second thought, I'm ditching viewports for now, looks like I gotta make some not-so-fun changes. Or I'm overthinking,
+// whatever.
+
 func (m ResultModel) View() string {
 	var (
 		green = lipgloss.Color("84")
@@ -173,10 +200,12 @@ func (m ResultModel) View() string {
 
 		headerStyle = lipgloss.NewStyle().Foreground(green).Bold(true).Align(lipgloss.Center)
 		// TODO: make cell width dependent on screen size and number of columns
-		cellStyle   = lipgloss.NewStyle().Padding(0, 1).Width(14)
+		cellStyle   = lipgloss.NewStyle().Padding(0, 1).Width(m.cellSize)
 		rowStyle    = cellStyle.Foreground(gray)
 		borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).
 				BorderForeground(green)
+		helpStyle = lipgloss.NewStyle().
+				Foreground(lipgloss.Color("241"))
 	)
 
 	t := table.New().
@@ -196,10 +225,23 @@ func (m ResultModel) View() string {
 	// For the beautiful lipgloss table
 	tableBuilder := strings.Builder{}
 
+	fmt.Fprintln(&tableBuilder, "Regression Result")
+	fmt.Fprintln(&tableBuilder)
+
 	if m.table != nil {
+		// For now, I hardcoded these sizes.
+		if m.cellSize == 0 {
+			return lipgloss.Place(
+				m.width,
+				m.height,
+				lipgloss.Center,
+				lipgloss.Center,
+				"WHEN WIL'ST THOU WIDEN THY SCREEN?",
+			)
+		}
 		xv, yv := m.table.GetData()
 		// still debating on whether I should use the len function or the exported variables
-		// Powers_Xi and Powers_Yi
+		// Powers_Xi and Powers_YXi
 		xl, yl := len(xv.Powers), len(yv.Powers)
 		arx := make([]string, xl)
 		fmt.Fprint(&outputBuilder, "x")
@@ -264,6 +306,10 @@ func (m ResultModel) View() string {
 		fmt.Fprintln(&tableBuilder, t.String())
 		fmt.Fprintln(&tableBuilder, "\nSystem of equations to solve:")
 		fmt.Fprintln(&tableBuilder, borderStyle.Render(getEqnSystem(m.regtype, xv.Sums, yv.Sums, m.n)))
+		if m.solnvec != nil {
+			fmt.Fprintln(&tableBuilder, "\nSoltion vector:")
+			fmt.Fprintln(&tableBuilder, borderStyle.Render(getVec(m.regtype, m.solnvec)))
+		}
 		fmt.Fprintln(&tableBuilder, "\nEquation of curve:")
 		fmt.Fprintln(&tableBuilder, borderStyle.Render(m.solns[0]))
 	}
@@ -271,6 +317,10 @@ func (m ResultModel) View() string {
 	fmt.Fprintf(&outputBuilder, "%v\n", m.solns)
 	fmt.Fprintf(&outputBuilder, "%v\n", m.errmsg)
 	fmt.Fprintln(&tableBuilder, m.errmsg)
+	for range 3 {
+		fmt.Fprintln(&tableBuilder)
+	}
+	fmt.Fprintln(&tableBuilder, helpStyle.Render("[ctrl + c] Exit"))
 	return lipgloss.Place(
 		m.width,
 		m.height,
@@ -282,6 +332,7 @@ func (m ResultModel) View() string {
 }
 
 // TODO: Softcode this ig?
+
 func getEqnSystem(regtype string, xsums []float32, ysums []float32, n int) string {
 	eqnsBuilder := strings.Builder{}
 	switch strings.ToLower(regtype) {
@@ -299,6 +350,17 @@ func getEqnSystem(regtype string, xsums []float32, ysums []float32, n int) strin
 		)
 	}
 	return eqnsBuilder.String()
+}
+
+func getVec(regtype string, solnvec []float32) string {
+	vecBuilder := strings.Builder{}
+	switch strings.ToLower(regtype) {
+	case "linear":
+		fmt.Fprintf(&vecBuilder, "[a b] = %v", solnvec)
+	case "quadratic":
+		fmt.Fprintf(&vecBuilder, "[a b c] = %v", solnvec)
+	}
+	return vecBuilder.String()
 }
 
 func (m DadModel) View() string {

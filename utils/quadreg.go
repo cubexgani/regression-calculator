@@ -43,7 +43,7 @@ func GetQuadTable(n int, x, y []float32) *QuadReg {
 	return &QuadReg{n, xv, yv}
 }
 
-func (qr *QuadReg) Solve() ([]string, error) {
+func (qr *QuadReg) Solve() ([]float32, []string, error) {
 
 	co := [][]float32{
 		{float32(qr.Num), qr.XV.Sums[0], qr.XV.Sums[1]},
@@ -54,13 +54,13 @@ func (qr *QuadReg) Solve() ([]string, error) {
 
 	noce, err := MakeAugMat(co, val)
 	if err != nil {
-		return []string{}, err
+		return nil, []string{}, err
 	}
 	solns, err := noce.Solve()
 	if err != nil {
-		return []string{}, err
+		return nil, []string{}, err
 	}
-	return []string{qr.GetCurve(solns, 'y')}, nil
+	return solns, []string{qr.GetCurve(solns, 'y')}, nil
 }
 
 func (*QuadReg) GetCurve(solns []float32, dependentVar rune) string {

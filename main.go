@@ -63,7 +63,7 @@ func doRegression() {
 		return
 	}
 
-	p, err := table.Solve()
+	_, p, err := table.Solve()
 	if err != nil {
 		fmt.Println(err)
 	} else {

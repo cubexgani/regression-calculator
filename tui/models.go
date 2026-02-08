@@ -39,16 +39,16 @@ type ResultModel struct {
 	width  int
 	height int
 
-	n       int
-	regtype string
-	x       []float32
-	y       []float32
-	table   utils.Regression
-	solns   []string
-	errmsg  string
+	cellSize int
+	n        int
+	regtype  string
+	x        []float32
+	y        []float32
+	solnvec  []float32
+	table    utils.Regression
+	solns    []string
+	errmsg   string
 }
-
-var rowSize int
 
 type DadModel struct {
 	Choice ChoiceModel

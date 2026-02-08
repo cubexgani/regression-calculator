@@ -21,7 +21,9 @@ type YVals struct {
 }
 
 type Regression interface {
-	Solve() ([]string, error)
+	//TODO: Make solutions a struct of the vector and the string, this looks bad
+
+	Solve() ([]float32, []string, error)
 	GetCurve([]float32, rune) string
 	GetData() (XVals, YVals)
 }
