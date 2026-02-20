@@ -17,7 +17,7 @@ func (m ChoiceModel) View() string {
 				BorderForeground(green)
 		bgc = lipgloss.NewStyle().
 			Width(20).
-			Background(lipgloss.Color("#21412d"))
+			Background(lipgloss.Color("23"))
 	)
 	outputBuilder := strings.Builder{}
 	optBuilder := strings.Builder{}
@@ -102,7 +102,7 @@ func (m XYInModel) View() string {
 			Align(lipgloss.Center)
 
 		bgc := ls.
-			Background(lipgloss.Color("#21412d"))
+			Background(lipgloss.Color("23"))
 
 		bdc := lipgloss.NewStyle().
 			Foreground(lipgloss.Color("84"))

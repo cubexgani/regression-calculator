@@ -12,16 +12,16 @@ var replacedStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("35")) // jade green
 
 var lineStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("4")) // blue
+	Foreground(lipgloss.Color("6")) // skyblue-ish
 
 var pointStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("9")) // red
+	Foreground(lipgloss.Color("203")) // less striking red
 
 var axisStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("29")) // spanish viridian green???
+	Foreground(lipgloss.Color("37")) // cyan-ish
 
 var labelStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("6")) // cyan
+	Foreground(lipgloss.Color("84")) // bright light green
 
 func DrawGraph(regtype string, width, height int, vec, x, y []float32) linechart.Model {
 	var lc linechart.Model
@@ -40,7 +40,6 @@ func DrawGraph(regtype string, width, height int, vec, x, y []float32) linechart
 
 	lc.DrawXYAxisAndLabel()
 
-	//TODO: Draw actual curve line instead
 	switch strings.ToLower(regtype) {
 	case "linear":
 		aymin := vec[0] + vec[1]*float32(minx)
