@@ -204,8 +204,9 @@ func (m ResultModel) View() string {
 		rowStyle    = cellStyle.Foreground(gray)
 		borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).
 				BorderForeground(green)
-		helpStyle = lipgloss.NewStyle().
-				Foreground(lipgloss.Color("241"))
+		graphBorderStyle = borderStyle.Padding(2, 4)
+		helpStyle        = lipgloss.NewStyle().
+					Foreground(lipgloss.Color("241"))
 	)
 
 	t := table.New().
@@ -229,12 +230,15 @@ func (m ResultModel) View() string {
 	fmt.Fprintln(&tableBuilder)
 
 	if m.graphMode && m.graphInitted {
+		fmt.Fprintln(&tableBuilder, graphBorderStyle.Render(m.lc.View()))
+		fmt.Fprintln(&tableBuilder)
+		fmt.Fprintln(&tableBuilder, helpStyle.Render("[r] Go to table view    [ctrl + c] Exit"))
 		return lipgloss.Place(
 			m.width,
 			m.height,
 			lipgloss.Center,
 			lipgloss.Center,
-			m.lc.View(),
+			tableBuilder.String(),
 		)
 	}
 
@@ -330,7 +334,7 @@ func (m ResultModel) View() string {
 	for range 3 {
 		fmt.Fprintln(&tableBuilder)
 	}
-	fmt.Fprintln(&tableBuilder, helpStyle.Render("[ctrl + c] Exit"))
+	fmt.Fprintln(&tableBuilder, helpStyle.Render("[r] Go to curve view    [ctrl + c] Exit"))
 	return lipgloss.Place(
 		m.width,
 		m.height,
