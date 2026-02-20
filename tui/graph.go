@@ -23,6 +23,8 @@ var axisStyle = lipgloss.NewStyle().
 var labelStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("84")) // bright light green
 
+// TODO: Fix the labellings, sometimes (esp in the quadratic regression test case), the labels are getting screwed
+
 func DrawGraph(regtype string, width, height int, vec, x, y []float32) linechart.Model {
 	var lc linechart.Model
 	var delfac float64
@@ -42,13 +44,37 @@ func DrawGraph(regtype string, width, height int, vec, x, y []float32) linechart
 
 	switch strings.ToLower(regtype) {
 	case "linear":
-		aymin := vec[0] + vec[1]*float32(minx)
-		aymax := vec[0] + vec[1]*float32(maxx)
-		lc.DrawBrailleLineWithStyle(canvas.Float64Point{X: minx, Y: float64(aymin)}, canvas.Float64Point{X: maxx, Y: float64(aymax)}, lineStyle)
-
+		DrawLinearGraph(&lc, vec, minx, maxx)
+	case "quadratic":
+		DrawQuadraticGraph(&lc, vec, x, y, minx, maxx)
 	}
 	for i := range len(x) {
 		lc.DrawRuneWithStyle(canvas.Float64Point{X: float64(x[i]), Y: float64(y[i])}, 'o', pointStyle)
 	}
 	return lc
+}
+
+func DrawLinearGraph(lc *linechart.Model, vec []float32, minx, maxx float64) {
+	aymin := vec[0] + vec[1]*float32(minx)
+	aymax := vec[0] + vec[1]*float32(maxx)
+	lc.DrawBrailleLineWithStyle(canvas.Float64Point{X: minx, Y: float64(aymin)}, canvas.Float64Point{X: maxx, Y: float64(aymax)}, lineStyle)
+}
+
+func DrawQuadraticGraph(lc *linechart.Model, vec, x, y []float32, minx, maxx float64) {
+	// For how granular(?) I want my quadratic curve to be
+	granLevel := 10
+	var p, incp float32
+	f32minx, f32maxx := float32(minx), float32(maxx)
+	p = f32minx
+	incp = (f32maxx - f32minx) / float32(granLevel)
+	aymin := vec[0] + vec[1]*f32minx + vec[2]*f32minx*f32minx
+
+	prev := canvas.Float64Point{X: minx, Y: float64(aymin)}
+	for range granLevel {
+		p += incp
+		yc := vec[0] + vec[1]*p + vec[2]*p*p
+		cur := canvas.Float64Point{X: float64(p), Y: float64(yc)}
+		lc.DrawBrailleLineWithStyle(prev, cur, lineStyle)
+		prev = cur
+	}
 }
