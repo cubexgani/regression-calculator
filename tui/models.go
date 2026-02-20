@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"github.com/NimbleMarkets/ntcharts/linechart"
 	"github.com/charmbracelet/bubbles/textinput"
 	"github.com/cubexgani/regression-calculator/utils"
 )
@@ -48,6 +49,10 @@ type ResultModel struct {
 	table    utils.Regression
 	solns    []string
 	errmsg   string
+
+	lc           linechart.Model
+	graphMode    bool
+	graphInitted bool
 }
 
 type DadModel struct {

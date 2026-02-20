@@ -228,6 +228,16 @@ func (m ResultModel) View() string {
 	fmt.Fprintln(&tableBuilder, "Regression Result")
 	fmt.Fprintln(&tableBuilder)
 
+	if m.graphMode && m.graphInitted {
+		return lipgloss.Place(
+			m.width,
+			m.height,
+			lipgloss.Center,
+			lipgloss.Center,
+			m.lc.View(),
+		)
+	}
+
 	if m.table != nil {
 		// For now, I hardcoded these sizes.
 		if m.cellSize == 0 {

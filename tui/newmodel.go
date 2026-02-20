@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"github.com/NimbleMarkets/ntcharts/linechart"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/cubexgani/regression-calculator/utils"
@@ -8,7 +9,7 @@ import (
 
 func NewChoiceModel() ChoiceModel {
 	ti := textinput.New()
-	ti.Prompt = "|* "
+	ti.Prompt = "▶ "
 	ti.Width = 30
 	return ChoiceModel{
 		opts: []string{
@@ -46,6 +47,8 @@ func NewResultModel(width int, height int, n int, x, y []float32, regtype string
 	var err error
 	var tb utils.Regression
 	var vec []float32
+	var lc linechart.Model
+	graphInitted := false
 
 	tb, err = utils.InitTable(n, x, y, regtype)
 	em := ""
@@ -55,6 +58,10 @@ func NewResultModel(width int, height int, n int, x, y []float32, regtype string
 		vec, sln, err = tb.Solve()
 		if err != nil {
 			em = err.Error()
+		} else {
+			lc = DrawGraph(regtype, width, height, vec, x, y)
+			graphInitted = true
+
 		}
 	}
 
@@ -70,9 +77,31 @@ func NewResultModel(width int, height int, n int, x, y []float32, regtype string
 		solns:    sln,
 		solnvec:  vec,
 		errmsg:   em,
+
+		lc:           lc,
+		graphInitted: graphInitted,
 	}
 }
 
+func arrMax(x []float32) float32 {
+	max := x[0]
+	for i := range len(x) {
+		if x[i] > max {
+			max = x[i]
+		}
+	}
+	return max
+}
+
+func arrMin(x []float32) float32 {
+	min := x[0]
+	for i := range len(x) {
+		if x[i] < min {
+			min = x[i]
+		}
+	}
+	return min
+}
 func (m ChoiceModel) Init() tea.Cmd {
 	return nil
 }
