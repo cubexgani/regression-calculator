@@ -10,20 +10,20 @@ import (
 )
 
 func (m ChoiceModel) View() string {
+	instruction := "Choose the type of regression"
+
 	var (
-		green       = lipgloss.Color("84")
 		borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).
 				Padding(0, 2).
 				BorderForeground(green)
-		bgc = lipgloss.NewStyle().
-			Width(20).
-			Background(lipgloss.Color("23"))
+		optStyle = lipgloss.NewStyle().
+				Width(len(instruction))
+		bgc = optStyle.
+			Background(blueStone)
 	)
 	outputBuilder := strings.Builder{}
 	optBuilder := strings.Builder{}
-	help := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("241"))
-	optBuilder.WriteString("Choose the type of regression\n")
+	fmt.Fprintln(&optBuilder, instruction)
 	if m.selected {
 		fmt.Fprint(&outputBuilder, optBuilder.String())
 		fmt.Fprintf(&outputBuilder, "Selected: %s\n", m.opts[m.cursor])
@@ -34,7 +34,7 @@ func (m ChoiceModel) View() string {
 				fmt.Fprintln(&outputBuilder, m.errmsg)
 			}
 		}
-		outputBuilder.WriteString("\n\n\n" + help.Render("[enter] Go to next screen   [ctrl+c] Exit"))
+		outputBuilder.WriteString("\n\n\n" + helpStyle.Render("[enter] Go to next screen   [ctrl+c] Exit"))
 		return lipgloss.Place(
 			m.width,
 			m.height,
@@ -47,16 +47,17 @@ func (m ChoiceModel) View() string {
 		return fmt.Sprintln("GET OUT")
 	}
 	for i, opt := range m.opts {
+		// I have no intention to get rid of these leading spaces hahaxd
 		if i == m.cursor {
 			fmt.Fprintln(&optBuilder, bgc.Render("   ", opt))
 		} else {
-			fmt.Fprintln(&optBuilder, "   ", opt)
+			fmt.Fprintln(&optBuilder, optStyle.Render("   ", opt))
 		}
 	}
 	fmt.Fprintln(&outputBuilder, borderStyle.Render(optBuilder.String()))
 	outputBuilder.WriteString("\n\nEnter number of coordinates\n")
 	fmt.Fprintln(&outputBuilder, m.input.View())
-	outputBuilder.WriteString("\n\n\n" + help.Render("[↑/↓] Navigate    [enter] Go to number input   [ctrl+c] Exit"))
+	outputBuilder.WriteString("\n\n\n" + helpStyle.Render("[↑/↓] Navigate    [enter] Go to number input   [ctrl+c] Exit"))
 
 	return lipgloss.Place(
 		m.width,
@@ -73,8 +74,7 @@ func (m XYInModel) View() string {
 	sb := strings.Builder{}
 	fmt.Fprintln(&sb, "Enter the coordinates")
 	fmt.Fprintln(&sb)
-	help := lipgloss.NewStyle().
-		Foreground(lipgloss.Color("241"))
+
 	if m.done {
 		sb.WriteString("x, y\n")
 		for i := range m.n {
@@ -102,10 +102,10 @@ func (m XYInModel) View() string {
 			Align(lipgloss.Center)
 
 		bgc := ls.
-			Background(lipgloss.Color("23"))
+			Background(blueStone)
 
 		bdc := lipgloss.NewStyle().
-			Foreground(lipgloss.Color("84"))
+			Foreground(green)
 
 		sb.WriteString("\n")
 		// top border
@@ -171,12 +171,12 @@ func (m XYInModel) View() string {
 		sb.WriteString(bdc.Render("┘\n"))
 	}
 	if m.errmsg != "" {
-		sb.WriteString(pointStyle.Render(m.errmsg))
+		sb.WriteString(errorStyle.Render(m.errmsg))
 		fmt.Fprintln(&sb)
 	}
 	sb.WriteString("\n\n\n")
-	fmt.Fprintln(&sb, help.Render("[tab] Go to next cell     [shift+tab] Go to previous cell"))
-	fmt.Fprintln(&sb, help.Render("[enter] Confirm inputs    [ctrl + c] Exit"))
+	fmt.Fprintln(&sb, helpStyle.Render("[tab] Go to next cell     [shift+tab] Go to previous cell"))
+	fmt.Fprintln(&sb, helpStyle.Render("[enter] Confirm inputs    [ctrl + c] Exit"))
 	return lipgloss.Place(
 		m.winwdth,
 		m.winht,
@@ -203,14 +203,12 @@ func (m ResultModel) View() string {
 			lipgloss.Center,
 			lipgloss.Center,
 			// TODO: Change point style here to something else when you move styles to a different file
-			pointStyle.Render(m.errmsg),
+			errorStyle.Render(m.errmsg),
 		)
 	}
 
 	var (
-		green = lipgloss.Color("84")
-		gray  = lipgloss.Color("245")
-
+		// Maybe I shouldn't move these table-specific styles to styles.go. Maybe....
 		headerStyle = lipgloss.NewStyle().Foreground(green).Bold(true).Align(lipgloss.Center)
 		// TODO: make cell width dependent on screen size and number of columns
 		cellStyle   = lipgloss.NewStyle().Padding(0, 1).Width(m.cellSize)
@@ -218,8 +216,6 @@ func (m ResultModel) View() string {
 		borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).
 				BorderForeground(green)
 		graphBorderStyle = borderStyle.Padding(2, 4)
-		helpStyle        = lipgloss.NewStyle().
-					Foreground(lipgloss.Color("241"))
 	)
 
 	t := table.New().

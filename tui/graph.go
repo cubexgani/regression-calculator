@@ -6,23 +6,7 @@ import (
 
 	"github.com/NimbleMarkets/ntcharts/canvas"
 	"github.com/NimbleMarkets/ntcharts/linechart"
-	"github.com/charmbracelet/lipgloss"
 )
-
-var replacedStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("35")) // jade green
-
-var lineStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("6")) // skyblue-ish
-
-var pointStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("203")) // less striking red
-
-var axisStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("37")) // cyan-ish
-
-var labelStyle = lipgloss.NewStyle().
-	Foreground(lipgloss.Color("84")) // bright light green
 
 func DrawGraph(regtype string, width, height int, vec, x, y []float32) linechart.Model {
 	var lc linechart.Model
