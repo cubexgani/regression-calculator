@@ -28,7 +28,6 @@ func NewXYModel(rows int, width int, height int, regtype string) XYInModel {
 
 	xyt := textinput.New()
 	xyt.Prompt = ""
-	// rev := Reverse(regtype)
 	xyt.Focus()
 	return XYInModel{
 		winwdth: width,
@@ -83,25 +82,6 @@ func NewResultModel(width int, height int, n int, x, y []float32, regtype string
 	}
 }
 
-func arrMax(x []float32) float32 {
-	max := x[0]
-	for i := range len(x) {
-		if x[i] > max {
-			max = x[i]
-		}
-	}
-	return max
-}
-
-func arrMin(x []float32) float32 {
-	min := x[0]
-	for i := range len(x) {
-		if x[i] < min {
-			min = x[i]
-		}
-	}
-	return min
-}
 func (m ChoiceModel) Init() tea.Cmd {
 	return nil
 }

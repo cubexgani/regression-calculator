@@ -1,6 +1,7 @@
 package tui
 
 import (
+	"math"
 	"strings"
 
 	"github.com/NimbleMarkets/ntcharts/canvas"
@@ -23,8 +24,6 @@ var axisStyle = lipgloss.NewStyle().
 var labelStyle = lipgloss.NewStyle().
 	Foreground(lipgloss.Color("84")) // bright light green
 
-// TODO: Fix the labellings, sometimes (esp in the quadratic regression test case), the labels are getting screwed
-
 func DrawGraph(regtype string, width, height int, vec, x, y []float32) linechart.Model {
 	var lc linechart.Model
 	var delfac float64
@@ -35,8 +34,11 @@ func DrawGraph(regtype string, width, height int, vec, x, y []float32) linechart
 	yAxisExtension := (maxy - miny) / delfac
 
 	lc = linechart.New(
-		width-80, height-15, minx-xAxisExtension, maxx+xAxisExtension, miny-yAxisExtension, maxy+yAxisExtension,
-		linechart.WithXYSteps(4, 2),
+		width-80, height-15, math.Floor(minx-xAxisExtension), math.Ceil(maxx+xAxisExtension),
+		math.Floor(miny-yAxisExtension), math.Ceil(maxy+yAxisExtension),
+		// FIXME: This looks like a good enough estimate for the XY labelling in fullscreen, but I need to dynamically calculate
+		// it according to the input range
+		linechart.WithXYSteps(6, 3),
 		linechart.WithStyles(axisStyle, labelStyle, replacedStyle),
 	)
 
@@ -77,4 +79,24 @@ func DrawQuadraticGraph(lc *linechart.Model, vec, x, y []float32, minx, maxx flo
 		lc.DrawBrailleLineWithStyle(prev, cur, lineStyle)
 		prev = cur
 	}
+}
+
+func arrMax(x []float32) float32 {
+	max := x[0]
+	for i := range len(x) {
+		if x[i] > max {
+			max = x[i]
+		}
+	}
+	return max
+}
+
+func arrMin(x []float32) float32 {
+	min := x[0]
+	for i := range len(x) {
+		if x[i] < min {
+			min = x[i]
+		}
+	}
+	return min
 }
