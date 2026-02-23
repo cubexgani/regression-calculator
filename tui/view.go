@@ -266,7 +266,6 @@ func (m ResultModel) View() string {
 	}
 
 	if m.table != nil {
-		// For now, I hardcoded these sizes.
 		if m.cellSize == 0 {
 			return lipgloss.Place(
 				m.width,
@@ -276,6 +275,8 @@ func (m ResultModel) View() string {
 				"WHEN WIL'ST THOU WIDEN THY SCREEN?",
 			)
 		}
+		fmt.Fprintln(&tableBuilder, "Regression type:", m.regtype)
+		fmt.Fprintln(&tableBuilder, "Number of entries:", m.n)
 		xv, yv := m.table.GetData()
 		// still debating on whether I should use the len function or the exported variables
 		// Powers_Xi and Powers_YXi
