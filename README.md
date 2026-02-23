@@ -5,19 +5,16 @@ Also this is my first project in golang. I still don't know why I picked up a la
 Hopefully this helps me pass my math exams.
 
 ## Getting started
-- Requires golang (obviously).
+- Requires golang because I didn't build and release any executable.
 - `git clone` this repository.
 - Go to the directory where the repository is cloned.
 - Install the required dependencies using `go mod tidy`.
-- Run it with `go run .`. Didn't learn much about building stuff yet so just run the project like this.
+- Run it with `go run .`.
 
 ## Goals
 - Go outside for a walk
 - Get the curve equation
 - learn about go testing
-- Bubbletea because I just want a cool looking TUI
 - Take up some non-cs hobbies
-- Finish linear and quadratic regression before math exam
+- Pass the math exam
 - Add more regressions later on
-- Finally start studying for the upcoming exams
-- curve on display???

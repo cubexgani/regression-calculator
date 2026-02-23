@@ -15,17 +15,18 @@ var title = `
 ██████╔╝█████╗░░██║░░██╗░██║░░╚═╝███████║██║░░░░░██║░░╚═╝
 ██╔══██╗██╔══╝░░██║░░╚██╗██║░░██╗██╔══██║██║░░░░░██║░░██╗
 ██║░░██║███████╗╚██████╔╝╚█████╔╝██║░░██║███████╗╚█████╔╝
-╚═╝░░╚═╝╚══════╝░╚═════╝░░╚════╝░╚═╝░░╚═╝╚══════╝░╚════╝░`
+╚═╝░░╚═╝╚══════╝░╚═════╝░░╚════╝░╚═╝░░╚═╝╚══════╝░╚════╝░
+`
 
 func (m ChoiceModel) View() string {
-	instruction := "Choose the type of regression"
+	initialPrompt := "Choose the type of regression"
 
 	var (
 		borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).
 				Padding(0, 2).
 				BorderForeground(green)
 		optStyle = lipgloss.NewStyle().
-				Width(len(instruction))
+				Width(len(initialPrompt))
 		bgc = optStyle.
 			Background(blueStone)
 	)
@@ -34,9 +35,8 @@ func (m ChoiceModel) View() string {
 
 	fmt.Fprintln(&outputBuilder, labelStyle.Render(title))
 	fmt.Fprintln(&outputBuilder)
-	fmt.Fprintln(&outputBuilder)
 
-	fmt.Fprintln(&optBuilder, instruction)
+	fmt.Fprintln(&optBuilder, initialPrompt)
 
 	if m.selected {
 		fmt.Fprint(&outputBuilder, optBuilder.String())
@@ -45,7 +45,7 @@ func (m ChoiceModel) View() string {
 			fmt.Fprintln(&outputBuilder, "\nEnter number of coordinates")
 			fmt.Fprintln(&outputBuilder, borderStyle.Render(m.input.View()))
 			if m.errmsg != "" {
-				fmt.Fprintln(&outputBuilder, m.errmsg)
+				fmt.Fprintln(&outputBuilder, errorStyle.Render(m.errmsg))
 			}
 		}
 		outputBuilder.WriteString("\n\n\n" + helpStyle.Render("[enter] Go to next screen   [ctrl+c] Exit"))

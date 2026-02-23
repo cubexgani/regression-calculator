@@ -21,14 +21,13 @@ func main() {
 		Result: tui.ResultModel{},
 	}, tea.WithAltScreen())
 
-	// p := tea.NewProgram(tui.NewXYModel(10, 150, 50, "linear"), tea.WithAltScreen())
-
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
 		os.Exit(1)
 	}
 }
 
+// For testing out regressions through raw CLI
 func doRegression() {
 	var regtype string
 	fmt.Print("Regression type: ")
