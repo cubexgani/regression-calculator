@@ -14,9 +14,6 @@ func NewChoiceModel() ChoiceModel {
 	return ChoiceModel{
 		opts: []string{
 			"Linear",
-			"Logarithmic",
-			"Power",
-			"Exponential",
 			"Quadratic",
 		},
 		input: ti,
