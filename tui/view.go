@@ -9,6 +9,14 @@ import (
 	"github.com/charmbracelet/lipgloss/table"
 )
 
+var title = `
+██████╗░███████╗░██████╗░░█████╗░░█████╗░██╗░░░░░░█████╗░
+██╔══██╗██╔════╝██╔════╝░██╔══██╗██╔══██╗██║░░░░░██╔══██╗
+██████╔╝█████╗░░██║░░██╗░██║░░╚═╝███████║██║░░░░░██║░░╚═╝
+██╔══██╗██╔══╝░░██║░░╚██╗██║░░██╗██╔══██║██║░░░░░██║░░██╗
+██║░░██║███████╗╚██████╔╝╚█████╔╝██║░░██║███████╗╚█████╔╝
+╚═╝░░╚═╝╚══════╝░╚═════╝░░╚════╝░╚═╝░░╚═╝╚══════╝░╚════╝░`
+
 func (m ChoiceModel) View() string {
 	instruction := "Choose the type of regression"
 
@@ -23,7 +31,13 @@ func (m ChoiceModel) View() string {
 	)
 	outputBuilder := strings.Builder{}
 	optBuilder := strings.Builder{}
+
+	fmt.Fprintln(&outputBuilder, labelStyle.Render(title))
+	fmt.Fprintln(&outputBuilder)
+	fmt.Fprintln(&outputBuilder)
+
 	fmt.Fprintln(&optBuilder, instruction)
+
 	if m.selected {
 		fmt.Fprint(&outputBuilder, optBuilder.String())
 		fmt.Fprintf(&outputBuilder, "Selected: %s\n", m.opts[m.cursor])
