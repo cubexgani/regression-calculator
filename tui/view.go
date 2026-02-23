@@ -171,8 +171,8 @@ func (m XYInModel) View() string {
 		sb.WriteString(bdc.Render("┘\n"))
 	}
 	if m.errmsg != "" {
-		sb.WriteString(m.errmsg)
-		sb.WriteRune('\n')
+		sb.WriteString(pointStyle.Render(m.errmsg))
+		fmt.Fprintln(&sb)
 	}
 	sb.WriteString("\n\n\n")
 	fmt.Fprintln(&sb, help.Render("[tab] Go to next cell     [shift+tab] Go to previous cell"))
@@ -192,8 +192,21 @@ func (m XYInModel) View() string {
 // - Include viewport for vertical scrolling
 // On second thought, I'm ditching viewports for now, looks like I gotta make some not-so-fun changes. Or I'm overthinking,
 // whatever.
+// And tabs too, using a single key to switch lookin cool enough.
 
 func (m ResultModel) View() string {
+	// Keeping this in case any error occurs, though there shouldn't be any
+	if m.errmsg != "" {
+		return lipgloss.Place(
+			m.width,
+			m.height,
+			lipgloss.Center,
+			lipgloss.Center,
+			// TODO: Change point style here to something else when you move styles to a different file
+			pointStyle.Render(m.errmsg),
+		)
+	}
+
 	var (
 		green = lipgloss.Color("84")
 		gray  = lipgloss.Color("245")

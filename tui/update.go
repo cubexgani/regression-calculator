@@ -98,6 +98,8 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				fcmds = append(fcmds, m.updateInputs(msg)...)
 				return m, tea.Batch(fcmds...)
 			}
+			// On success, delete any residue error message
+			m.errmsg = ""
 			if m.colcurs == 0 {
 				m.x[m.rowcurs] = val
 			} else {
@@ -136,6 +138,7 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				fcmds = append(fcmds, m.updateInputs(msg)...)
 				return m, tea.Batch(fcmds...)
 			}
+			m.errmsg = ""
 			if m.colcurs == 0 {
 				m.x[m.rowcurs] = val
 			} else {
@@ -175,6 +178,7 @@ func (m XYInModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				fcmds = append(fcmds, m.updateInputs(msg)...)
 				return m, tea.Batch(fcmds...)
 			}
+			m.errmsg = ""
 			if m.colcurs == 0 {
 				m.x[m.rowcurs] = ival
 			} else {
