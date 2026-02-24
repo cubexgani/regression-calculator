@@ -229,7 +229,8 @@ func (m ResultModel) View() string {
 		rowStyle    = cellStyle.Foreground(gray)
 		borderStyle = lipgloss.NewStyle().Border(lipgloss.NormalBorder()).
 				BorderForeground(green)
-		graphBorderStyle = borderStyle.Padding(2, 4)
+		graphBorderStyle = borderStyle.Padding(1, 4)
+		legendStyle      = borderStyle.Padding(0, 4).Margin(0, 3)
 	)
 
 	t := table.New().
@@ -254,6 +255,18 @@ func (m ResultModel) View() string {
 
 	if m.graphMode && m.graphInitted {
 		fmt.Fprintln(&tableBuilder, graphBorderStyle.Render(m.lc.View()))
+		// fmt.Fprintln(&tableBuilder, borderStyle.Render("Curve equation:", m.solns[0]))
+		curveStr := borderStyle.Render("Curve equation:", m.solns[0])
+
+		legendBuilder := strings.Builder{}
+		fmt.Fprintln(&legendBuilder, "LEGEND")
+		fmt.Fprintln(&legendBuilder, lineStyle.Render("⠤⠤"), " ", "Line")
+		fmt.Fprint(&legendBuilder, pointStyle.Render("o"), "    ", "Point")
+		legendStr := legendStyle.Render(legendBuilder.String())
+
+		fmt.Fprintln(&tableBuilder,
+			lipgloss.JoinHorizontal(lipgloss.Center, curveStr, legendStr),
+		)
 		fmt.Fprintln(&tableBuilder)
 		fmt.Fprintln(&tableBuilder, helpStyle.Render("[r] Go to table view    [ctrl + c] Exit"))
 		return lipgloss.Place(
