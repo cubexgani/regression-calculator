@@ -6,7 +6,7 @@ Hopefully this helps me do well in my math exams.
 
 ## Getting started
 - Requires golang because I didn't build and release any executable.
-- Also requires a [nerd font](https://www.nerdfonts.com/font-downloads), and a terminal which can render the graph properly with the font. If you're using Windows/WSL, use Windows Terminal to run this project.
+- Also requires a terminal which can render the graph properly. If you're using Windows/WSL, use Windows Terminal to run this project. Optionally you can use a [nerd font](https://www.nerdfonts.com/font-downloads) if the graph isn't being rendered properly in your current font, but it works just fine otherwise.
 - `git clone` this repository.
 - Go to the directory where the repository is cloned.
 - Install the required dependencies using `go mod tidy`.
